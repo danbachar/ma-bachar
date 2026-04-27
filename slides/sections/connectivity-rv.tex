@@ -1,0 +1,149 @@
+\begin{frame}{Well-connected friends}
+    \centering
+    \resizebox{\textwidth}{!}{
+        \begin{tikzpicture}[
+            smartphone_body/.style={
+                draw, thick, rectangle, rounded corners=4pt,
+                minimum width=0.8cm, minimum height=1.6cm, fill=white,
+            },
+            smartphone_screen/.style={
+                draw, thick, rounded corners=1pt
+            },
+            smartphone_button/.style={
+                draw, thick, circle, radius=0.05cm
+            },
+            big_cloud/.style={
+                draw, cloud, thick,
+                minimum width=6cm, minimum height=3.8cm,
+                cloud ignores aspect, cloud puffs=15,
+                draw=gray!60
+            },
+            small_cloud/.style={
+                draw, cloud, thick,
+                minimum width=3.5cm, minimum height=2.5cm,
+                cloud ignores aspect, cloud puffs=13,
+                draw=gray!60
+            },
+            transition_arrow/.style={
+                ->, >=stealth, line width=2pt, draw=gray!60
+            }
+        ]
+
+            % --- TOP SECTION: Phone-Mediated ---
+
+            % Big cloud on the left, encompassing both phones
+            \node[big_cloud] (bigcloud) at (-3.5, 3.5) {};
+
+            % Main (middle) smartphone, upper-right inside the big cloud
+            \node[smartphone_body] (pmain) at (-2.2, 4) {};
+
+            % Second smartphone, bottom-left inside the big cloud
+            \node[smartphone_body] (pleft_top) at (-4.8, 3) {};
+
+            % Third smartphone with its own cloud on the right
+            \node[smartphone_body] (pright_top) at (5, 3.5) {};
+            \node[small_cloud] at (pright_top.center) {};
+
+            % BT connection between the two phones inside the big cloud
+            \draw[thick] (pmain.center) -- (pleft_top.center)
+                node[blue!70!black, fill=white, inner sep=2pt, midway] {\Large \faBluetoothB};
+
+            % Globe (UDP) connection: main phone <-> right phone
+            \draw[thick] (pmain.center) -- (pright_top.center)
+                node[green!40!black, fill=white, inner sep=2pt, midway] {\Large \faGlobe};
+
+            % --- TRANSITION ---
+            \draw[transition_arrow] (0, 1.5) -- (0, 0.3);
+
+            % --- BOTTOM SECTION: Direct Connection ---
+
+            \node[smartphone_body] (p1_bot) at (-5, -1) {};
+            \node[smartphone_body] (p2_bot) at (5, -1) {};
+
+            \node[small_cloud] at (p1_bot.center) {};
+            \node[small_cloud] at (p2_bot.center) {};
+
+            \draw[thick] (p1_bot.center) -- (p2_bot.center)
+                node[green!40!black, fill=white, inner sep=2pt] at (0, -1) {\Huge \faGlobe};
+
+            % --- OVERLAYS (Hardware Details) ---
+            \foreach \p in {pmain, pleft_top, pright_top, p1_bot, p2_bot} {
+                \node[smartphone_body] at (\p) {};
+                \draw[smartphone_screen] ($(\p)+(-0.3, -0.6)$) rectangle ($(\p)+(0.3, 0.7)$);
+                \draw[smartphone_button] ($(\p)+(0,-0.5)$) circle (0.05cm);
+            }
+
+        \end{tikzpicture}
+    }
+\end{frame}
+
+\begin{frame}{Rendezvous Server}
+    \centering
+    \resizebox{\textwidth}{!}{
+        \begin{tikzpicture}[
+            node distance=3cm,
+            % Styles from previous diagrams
+            smartphone_body/.style={
+                draw, thick, rectangle, rounded corners=4pt, 
+                minimum width=0.8cm, minimum height=1.6cm, fill=white,
+            },
+            smartphone_screen/.style={
+                draw, thick, rounded corners=1pt
+            },
+            smartphone_button/.style={
+                draw, thick, circle, radius=0.05cm
+            },
+            cloud_boundary/.style={
+                draw, cloud, thick, 
+                minimum width=3.5cm, minimum height=2.5cm, 
+                cloud ignores aspect, cloud puffs=13,
+                draw=gray!60
+            },
+            transition_arrow/.style={
+                ->, >=stealth, line width=2pt, draw=gray!60
+            }
+        ]
+
+            % --- TOP SECTION: Server-Based ---
+            
+            % Nodes (triangle: server at top middle, phones at bottom corners)
+            \node[smartphone_body] (p1_top) at (-5, 3) {};
+            \node[smartphone_body] (p2_top) at (5, 3) {};
+            \node[server={1.4cm}{gray}] (server) at (0, 5) {};
+
+            % Clouds
+            \node[cloud_boundary] at (p1_top.center) {};
+            \node[cloud_boundary] at (p2_top.center) {};
+
+            % Connections
+            \draw[thick] (p1_top.center) -- (server.south west) node[green!40!black, fill=white, inner sep=2pt, midway] {\Large \faGlobe};
+            \draw[thick] (p2_top.center) -- (server.south east) node[green!40!black, fill=white, inner sep=2pt, midway] {\Large \faGlobe};
+
+            % --- TRANSITION ---
+            \draw[transition_arrow] (0, 2.8) -- (0, 1.2);
+
+            % --- BOTTOM SECTION: Direct Connection ---
+            
+            % Nodes
+            \node[smartphone_body] (p1_bot) at (-5, 0) {};
+            \node[smartphone_body] (p2_bot) at (5, 0) {};
+            
+            % Clouds
+            \node[cloud_boundary] at (p1_bot.center) {};
+            \node[cloud_boundary] at (p2_bot.center) {};
+            
+            % Direct Connection
+            \draw[thick] (p1_bot.center) -- (p2_bot.center) node[green!40!black, fill=white, inner sep=2pt] at (0, 0) {\Huge \faGlobe};
+            % node[midway, above=0.1cm] {\Large \faGlobe};
+
+            % --- OVERLAYS (Hardware Details) ---
+            % Redrawing phone details to ensure lines don't strike through them
+            \foreach \p in {p1_top, p2_top, p1_bot, p2_bot} {
+                \node[smartphone_body] at (\p) {}; % Background clear
+                \draw[smartphone_screen] ($(\p)+(-0.3, -0.6)$) rectangle ($(\p)+(0.3, 0.7)$);
+                \draw[smartphone_button] ($(\p)+(0,-0.5)$) circle (0.05cm);
+            }
+
+        \end{tikzpicture}
+    }
+\end{frame}

@@ -1,0 +1,76 @@
+\begin{frame}{Dual-stack comms}
+    \centering
+    \resizebox{0.7\textwidth}{!}{
+        \begin{tikzpicture}[
+            node distance=3.5cm,
+            smartphone/.style={
+                draw,
+                thick,
+                rectangle,
+                rounded corners=4pt,
+                minimum width=0.8cm,
+                minimum height=1.6cm,
+                fill=white,
+            },
+            % Styled horizontal transition arrow
+            big_arrow/.style={
+                ->,
+                >=stealth,
+                line width=2.5pt,
+                draw=gray!60
+            },
+            % Simple transition arrow
+            double_arrow/.style={
+                ->,
+                >=latex,
+                line width=1.5pt,
+                draw=gray!70,
+                rounded corners
+            }
+        ]
+
+            % --- TOP ROW ---
+            
+            % Diagram A (Left)
+            \node[smartphone] (a1) at (0,4) {};
+            \node[smartphone] (a2) at (3,4) {};
+            \draw[thick] (a1.center) -- (a2.center);
+            % Bluetooth Icon
+            \node[blue!70!black] at (1.5, 4.4) {\scalebox{2}{\Large \faBluetoothB}};
+
+            % First Transition Arrow (Gray)
+            \draw[big_arrow] (4,4) -- (5.5,4);
+
+            % Diagram B (Right)
+            \node[smartphone] (b1) at (6.5,4) {};
+            \node[smartphone] (b2) at (9.5,4) {};
+            \draw[thick] (b1.center) -- (b2.center);
+            % Stacked Icons
+            \node[blue!70!black] at (8, 4.5) {\scalebox{2}{\Large \faBluetoothB}};
+            \node[green!40!black] at (8, 3.5) {\scalebox{2}{\Large \faGlobe}};
+
+            % --- BOTTOM ROW ---
+            
+            % Diagram C (Full Width)
+            \node[smartphone] (c1) at (0,0) {};
+            \node[smartphone] (c2) at (9.5,0) {};
+            \draw[thick] (c1.center) -- (c2.center);
+            % Globe Icon centered on the long line
+            \node[green!40!black, fill=white, inner sep=2pt] at (4.75, 0) {\Huge \faGlobe};
+
+            % Re-drawing phone details over the lines
+            \foreach \p in {a1,a2,b1,b2,c1,c2} {
+                \node[smartphone] at (\p) {}; % Re-draw box
+                \draw[thick, rounded corners=1pt] ($(\p)+(-0.3, -0.6)$) rectangle ($(\p)+(0.3, 0.7)$); % Screen
+                \draw[thick] ($(\p)+(0,-0.5)$) circle (0.05cm); % Home button
+            }
+
+        \end{tikzpicture}
+    }
+    \begin{itemize}
+        \item BLE as signaling channel
+        \item Advertise multiple addresses
+        \item UDP for hole-punching
+        \item UDX for long-range communication
+    \end{itemize}
+\end{frame}

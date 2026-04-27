@@ -1,0 +1,86 @@
+\begin{frame}{NAT}
+    \centering
+    \resizebox{\textwidth}{!}{
+        \begin{tikzpicture}[
+            node distance=3.5cm,
+            % Define custom shapes for consistency
+            smartphone_body/.style={
+                draw,
+                thick,
+                rectangle,
+                rounded corners=4pt,
+                minimum width=0.8cm,
+                minimum height=1.6cm,
+                fill=white,
+            },
+            smartphone_screen/.style={
+                draw, thick, rounded corners=1pt
+            },
+            smartphone_button/.style={
+                draw, thick, circle, radius=0.05cm
+            },
+            cloud_boundary/.style={
+                draw, cloud, thick,
+                minimum width=4cm, minimum height=3cm,
+                cloud ignores aspect, cloud puffs=15
+            },
+            contradiction_symbol/.style={
+                red, font=\Huge,
+                fill=white, inner sep=0pt % Contradiction node background trick
+            }
+        ]
+
+            % Spacing from center: wide like the previous far-away diagram
+            \pgfmathsetmacro{\wideDist}{7} % Distance from center to phones
+            \pgfmathsetmacro{\routerDist}{5} % Distance from center to routers
+
+            % --- NETWORK LAYOUT ---
+
+            % Set up main node structure for connections and clouds
+            % Define filled background nodes first to anchor connections correctly
+
+            % Left Group
+            \node[smartphone_body] (p1) at (-\wideDist, 0) {};
+            \node[nuc={1.1cm}{gray}] (r1) at (-\routerDist, 0) {};
+
+            % Right Group
+            \node[smartphone_body] (p2) at (\wideDist, 0) {};
+            \node[nuc={1.1cm}{gray}] (r2) at (\routerDist, 0) {};
+
+            % Central contradiction reference coordinate
+            \coordinate (midR) at (0, 0);
+
+            % Draw all connection lines. They anchor to the center of the nodes
+            \draw[thick] (p1.center) -- (r1.center);
+            \draw[thick] (r1.center) -- (r2.center);
+            \draw[thick] (p2.center) -- (r2.center);
+
+            % --- ADD ICONS AND DETAILS (OVERLAYS) ---
+
+            % Redraw filled nodes to cover the lines passing through them
+
+            % Phones and Details
+            \node[blue!70!black] at (-\wideDist, -0.1) {\faBluetoothB}; % Continuity detail
+            \node[blue!70!black] at (\wideDist, -0.1) {\faBluetoothB};
+
+            \foreach \p in {p1, p2} {
+                \node[smartphone_body] at (\p) {}; % Redraw filled box
+                \draw[smartphone_screen] ($(\p)+(-0.3, -0.6)$) rectangle ($(\p)+(0.3, 0.7)$);
+                \draw[smartphone_button] ($(\p)+(0,-0.5)$) circle (0.05cm);
+                \node[cloud_boundary] at (\p) {}; % Cloud around phone
+            }
+
+            % Routers: Redraw nuc to hide the line crossing
+            \foreach \r in {r1, r2} {
+                \node[nuc={1.1cm}{gray}] at (\r) {};
+            }
+
+            % --- Central Contradiction (FaBolt) ---
+            % Redraw over the center with white fill node trick to hide the line crossing
+            \node[contradiction_symbol] (bolt) at (midR) {\faBolt};
+            \node[fill=white, circle, minimum size=0.8cm, inner sep=0pt] at (bolt) {}; % Clear line behind bolt
+            \node[contradiction_symbol] at (bolt) {\faBolt}; % Final placement
+
+        \end{tikzpicture}
+    }
+\end{frame}

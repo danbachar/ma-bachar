@@ -1,0 +1,55 @@
+\begin{frame}{Architecture}
+    \centering
+    \resizebox{!}{0.33\textheight}{ % Resizes height to 1/3 of the text height, aspect ratio preserved
+        \begin{tikzpicture}[
+            stack/.style={
+                draw, 
+                thick, 
+                minimum height=1.2cm, 
+                font=\sffamily\Huge,
+                inner sep=10pt
+            },
+            arrow/.style={
+                ->, 
+                >=stealth, 
+                thick
+            }
+        ]
+
+            % --- Layer 1: Bottom (BLE, Cellular, WLAN) ---
+            \node[stack, minimum width=3cm] (ble) {BLE};
+            \node[stack, minimum width=3cm, right=0.5cm of ble] (cellular) {Cellular};
+            \node[stack, minimum width=3cm, right=0.5cm of cellular] (wlan) {WLAN};
+
+            % --- Layer 2: IP (Full Width) ---
+            \node[stack, minimum width=10cm, above=0.8cm of ble.north west, anchor=south west] (ip) {IP};
+
+            % --- Layer 3: UDP with TLS to the right ---
+            \node[stack, minimum width=7cm, above=0.8cm of ip.north west, anchor=south west] (udp) {UDP};
+            \node[stack, minimum width=2.5cm, above=0.8cm of ip.north east, anchor=south east] (noise) {Noise};
+
+            % --- Layer 4: Top (GSN - Full Width) ---
+            \node[stack, minimum width=10cm, above=0.8cm of udp.north west, anchor=south west] (gsn) {GSN};
+
+            % --- Arrows (Downward) ---
+            % From GSN to UDP
+            \draw[arrow] (gsn.south -| udp.north) -- (udp.north);
+            \draw[arrow] (gsn.south -| noise.north) -- (noise.north);
+
+            % From UDP to IP
+            \draw[arrow] (udp.south) -- (udp.south |- ip.north);
+
+            % From IP to BLE, Cellular, WLAN
+            \draw[arrow] (ip.south -| ble.north) -- (ble.north);
+            \draw[arrow] (ip.south -| cellular.north) -- (cellular.north);
+            \draw[arrow] (ip.south -| wlan.north) -- (wlan.north);
+
+        \end{tikzpicture}
+    }
+    \begin{itemize}
+        \item Connect two peer devices according to priority and proximity pair 
+        \item Dual-stack network comms: BLE first, Cellular (5G/LTE) and WLAN second
+        \item In close range, use BLE for signaling to establish UDP connection
+        \item ICE-similar stack for address reflection, hole-punching using friends
+    \end{itemize}
+\end{frame}
