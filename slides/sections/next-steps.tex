@@ -48,6 +48,48 @@
     \end{itemize}
 \end{frame}
 
+\begin{frame}{Mobility model: BLE-only relay}
+    \centering
+    \resizebox{\textwidth}{!}{%
+        \begin{tikzpicture}[
+            panel/.style={
+                draw=TUMBlue!70!black,
+                fill=TUMBlue!4,
+                rounded corners=2pt,
+                text width=3.45cm,
+                minimum height=4.9cm,
+                align=left,
+                inner sep=7pt
+            }
+        ]
+            \node[panel] (goal) at (0,0) {
+                {\bfseries\large\textcolor{TUMBlue}{Goal}}\\[0.6em]
+                {\small
+                $\bullet$ Test if BLE relay can replace UDP locally.\\[0.6em]
+                $\bullet$ Compare direct, friend, and open relay (simulated).\\[0.6em]
+                $\bullet$ Report delivery, latency, overhead, and abuse surface.}
+            };
+
+            \node[panel, right=0.55cm of goal] (track) {
+                {\bfseries\large\textcolor{TUMBlue}{What we track}}\\[0.6em]
+                {\small
+                $\bullet$ Encounters: pseudonym pair, start/end, duration, inter-contact, RSSI band.\\[0.6em]
+                $\bullet$ Delivery: created, relayed, ACKed, hop count, TTL expiry, size, failure.\\[0.6em]
+                $\bullet$ Cost: relay bytes, duplicates, queues, scan/advertise time, battery proxy.}
+            };
+
+            \node[panel, right=0.55cm of track] (how) {
+                {\bfseries\large\textcolor{TUMBlue}{How}}\\[0.6em]
+                {\small
+                $\bullet$ Encrypted local trace log.\\[0.6em]
+                $\bullet$ Upload only by explicit opt-in.\\[0.6em]
+                $\bullet$ Replay traces in simulator calibrated by BLE contacts.\\[0.6em]
+                $\bullet$ No content; coarse location only by separate opt-in.}
+            };
+        \end{tikzpicture}
+    }
+\end{frame}
+
 \begin{frame}{Master thesis gantt: submission on 15 Aug 2026}
     \centering
     \resizebox{\textwidth}{!}{%
