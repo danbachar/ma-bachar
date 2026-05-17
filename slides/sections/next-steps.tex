@@ -1,7 +1,106 @@
-\begin{frame}{Next steps}
+\newcommand{\relaytimelineaxis}[1]{%
+    \draw[gray!45] (0,#1) -- (12,#1);
+    \foreach \x/\label in {
+        0/{May 17},
+        2/{Jun 1},
+        4/{Jun 15},
+        6/{Jul 1},
+        8/{Jul 15},
+        10/{Aug 1},
+        12/{Aug 15}
+    } {
+        \draw[gray!55] (\x,#1-0.08) -- (\x,#1+0.08);
+        \node[anchor=north, font=\tiny] at (\x,#1-0.12) {\label};
+    }
+}
+
+\newcommand{\relaybar}[5]{%
+    \node[anchor=east, align=right, font=\scriptsize] at (-0.25,#1+0.18) {#4};
+    \filldraw[draw=#5!85!black, fill=#5!70, rounded corners=1pt]
+        (#2,#1) rectangle (#3,#1+0.36);
+}
+
+\newcommand{\phdaxis}[1]{%
+    \draw[gray!45] (0,#1) -- (12,#1);
+    \foreach \x/\label in {
+        0/{Aug 2026},
+        2/{Feb 2027},
+        4/{Aug 2027},
+        6/{Feb 2028},
+        8/{Aug 2028},
+        10/{Feb 2029},
+        12/{Aug 2029}
+    } {
+        \draw[gray!55] (\x,#1-0.08) -- (\x,#1+0.08);
+        \node[anchor=north, font=\tiny] at (\x,#1-0.12) {\label};
+    }
+}
+
+\begin{frame}{Since mid-April: what we converged on}
     \begin{itemize}
-        \item Stabilize connectivity, testing
-        \item Deploy GLP compiled to dart code on smartphones
-        \item Write
+        \item Built the transport around cryptographic identity: Ed25519 public keys as peer identity and signed packets as the basic trust object.
+        \item Stabilized the dual-stack direction: BLE discovery and nearby direct messaging, with \mbox{UDP/UDX} explored for longer-range connectivity.
+        \item Worked through NAT traversal: public address discovery, hole-punching, well-connected friends, and rendezvous-style coordination.
+        \item Added delivery machinery: ACK/read receipts, fragmentation for large payloads, Redux-backed peer/transport/message/friendship state.
+        \item Added Noise sessions as hop-level channel security, then identified why relaying needs a separate end-to-end sealed message envelope.
+        \item Reframed the thesis around a BLE-only path: remove UDP, analyze friend-based relaying, and compare it with direct BLE and open stranger relay.
+        \item Connected the research plan to opportunistic networking, Sybil/misbehavior defenses, and Shapiro--Keidar work on grassroots/blocklace systems.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Master thesis gantt: submission on 15 Aug 2026}
+    \centering
+    \resizebox{\textwidth}{!}{%
+        \begin{tikzpicture}[x=0.78cm,y=0.56cm]
+            \relaytimelineaxis{0}
+
+            \relaybar{6.0}{0.0}{2.5}{Scope}{TUMBlue}
+            \relaybar{5.2}{0.4}{3.8}{Literature\\and threats}{TUMOrange}
+            \relaybar{4.4}{1.0}{4.8}{BLE-only\\sealed relay}{TUMBlue}
+            \relaybar{3.6}{1.4}{6.7}{Mobility\\model}{TUMDarkerGreen}
+            \relaybar{2.8}{3.2}{7.2}{Friend-relay\\prototype}{TUMBlue}
+            \relaybar{2.0}{5.6}{9.7}{Comparative\\evaluation}{TUMOrange}
+            \relaybar{1.2}{1.9}{12.0}{Writing\\and revision}{TUMDarkerGreen}
+
+            \draw[red!75!black, line width=0.9pt] (9.6,0.55) -- (9.6,6.65);
+            \node[anchor=south, rotate=90, font=\tiny, red!75!black] at (9.55,6.7) {full draft};
+
+            \draw[red!75!black, line width=1.1pt] (12,0.55) -- (12,6.65);
+            \node[anchor=south, rotate=90, font=\tiny, red!75!black] at (11.95,6.7) {submission};
+        \end{tikzpicture}
+    }
+    \vspace{0.3em}
+    \begin{itemize}
+        \item Minimum contribution: secure relay design, mobility model, comparison, and critical security analysis.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{PhD runway: three-year research arc}
+    \centering
+    \resizebox{\textwidth}{!}{%
+        \begin{tikzpicture}[x=0.78cm,y=0.58cm]
+            \phdaxis{0}
+
+            \relaybar{6.0}{0.0}{3.4}{Measurement\\and BLE relay}{TUMBlue}
+            \relaybar{5.2}{1.2}{4.5}{Social\\routing}{TUMDarkerGreen}
+            \relaybar{4.4}{3.8}{7.5}{Adversarial\\relay model}{TUMOrange}
+            \relaybar{3.6}{5.0}{8.6}{Blocklace\\control plane}{TUMBlue}
+            \relaybar{2.8}{7.5}{10.4}{Deployment\\and GLP}{TUMDarkerGreen}
+            \relaybar{2.0}{9.3}{12.0}{Dissertation\\and defense}{TUMOrange}
+
+            \foreach \x/\label in {
+                3.4/{paper 1},
+                7.5/{paper 2},
+                10.4/{deployment},
+                12/{defense}
+            } {
+                \draw[red!75!black, line width=0.9pt] (\x,0.55) -- (\x,6.65);
+                \node[anchor=south, rotate=90, font=\tiny, red!75!black] at (\x-0.05,6.7) {\label};
+            }
+        \end{tikzpicture}
+    }
+    \vspace{0.3em}
+    \begin{itemize}
+        \item Thesis-to-PhD bridge: from "does BLE relay work?" to "can grassroots social trust make mobile relaying secure and abuse-resistant?"
     \end{itemize}
 \end{frame}
