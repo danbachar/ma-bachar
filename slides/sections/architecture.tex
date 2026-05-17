@@ -7,7 +7,10 @@
                 thick, 
                 minimum height=1.2cm, 
                 font=\sffamily\Huge,
-                inner sep=10pt
+                align=center,
+                outer sep=0pt,
+                inner xsep=0pt,
+                inner ysep=10pt
             },
             arrow/.style={
                 ->, 
@@ -17,19 +20,19 @@
         ]
 
             % --- Layer 1: Bottom (BLE, Cellular, WLAN) ---
-            \node[stack, minimum width=3cm] (ble) {BLE};
-            \node[stack, minimum width=3cm, right=0.5cm of ble] (cellular) {Cellular};
-            \node[stack, minimum width=3cm, right=0.5cm of cellular] (wlan) {WLAN};
+            \node[stack, minimum width=3.2cm] (ble) at (-3.7,0) {BLE};
+            \node[stack, minimum width=3.2cm] (cellular) at (0,0) {Cellular};
+            \node[stack, minimum width=3.2cm] (wlan) at (3.7,0) {WLAN};
 
             % --- Layer 2: IP (Full Width) ---
-            \node[stack, minimum width=10cm, above=0.8cm of ble.north west, anchor=south west] (ip) {IP};
+            \node[stack, minimum width=10.6cm] (ip) at (0,2) {IP};
 
             % --- Layer 3: UDP with TLS to the right ---
-            \node[stack, minimum width=7cm, above=0.8cm of ip.north west, anchor=south west] (udp) {UDP};
-            \node[stack, minimum width=2.5cm, above=0.8cm of ip.north east, anchor=south east] (noise) {Noise};
+            \node[stack, minimum width=7.6cm] (udp) at (-1.5,4) {UDP};
+            \node[stack, minimum width=2.5cm] (noise) at (4.05,4) {Noise};
 
             % --- Layer 4: Top (GSN - Full Width) ---
-            \node[stack, minimum width=10cm, above=0.8cm of udp.north west, anchor=south west] (gsn) {GSN};
+            \node[stack, minimum width=10.6cm] (gsn) at (0,6) {GSN};
 
             % --- Arrows (Downward) ---
             % From GSN to UDP
