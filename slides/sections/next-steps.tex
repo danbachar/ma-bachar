@@ -15,7 +15,9 @@
 }
 
 \newcommand{\relaybar}[5]{%
-    \node[anchor=east, align=right, font=\scriptsize] at (-0.25,#1+0.18) {#4};
+    \fill[gray!4, rounded corners=1pt] (-1.85,#1-0.08) rectangle (12.15,#1+0.44);
+    \draw[gray!26, line width=0.25pt] (-0.05,#1+0.18) -- (12.05,#1+0.18);
+    \node[anchor=east, align=right, text width=1.55cm, font=\scriptsize] at (-0.25,#1+0.18) {#4};
     \filldraw[draw=#5!85!black, fill=#5!70, rounded corners=1pt]
         (#2,#1) rectangle (#3,#1+0.36);
 }
