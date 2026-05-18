@@ -44,15 +44,14 @@
     }
 }
 
-\begin{frame}{Since mid-April: Flutter project work}
+\begin{frame}{Since last weekly}
     \begin{itemize}
-        \item Migrated BLE from separate central/peripheral plugins to one \mbox{grassroots\_bluetooth\_layer}: unified event model, shared discovery UUID, post-connect ANNOUNCE identity, and BLE role toggle.
+        \item Migrated BLE communincation layer from two separate central/peripheral plugins to one \code{grassroots\_bluetooth\_layer}: unified event model, shared discovery UUID, post-connect ANNOUNCE identity, and BLE role toggle.
         \item Reworked UDX into a dual-stack Internet transport: IPv4/IPv6 sockets, multi-candidate addresses, live network/public-address refresh, and best candidate-pair selection.
-        \item Aligned rendezvous/NAT traversal with GLP: RECONNECT/AVAILABLE matching, two-sided PUNCH\_INITIATE, addrReflect registration proof, and RV fan-out.
-        \item Added well-connected-friend and friends-of-friends mediation: friends can facilitate rendezvous only when the target was advertised through the friend graph.
-        \item Moved friend-shared rendezvous lists from PeerState to FriendshipState so RV\_LIST data is friendship-scoped, persisted, and survives restart.
-        \item Secured signaling with Noise XX across clients and rendezvous anchors, removing the plaintext configured-RV path.
-        \item Hardened delivery over UDX/BLE: ACKs after fragment reassembly, messageId through fragments, UDX packet framing/u32 lengths for photos, and stale-session/socket recovery.
+        \item Aligned rendezvous/NAT traversal with GLP Networking API doc: two-sided punch, RV fan-out (A and B try each others' RV servers when the connection breaks), friends-of-friends mediation (friends can facilitate rendezvous for mutual friends).
+        \item Persist friend data in encrypted local storage so that connections can be initiated post restart.
+        \item Added Noise XX handshake for secure channel encryption: messaging and signaling with Noise XX across clients and rendezvous anchors.
+        \item Hardened delivery over UDX/BLE: ACKs after fragment reassembly, increase max UDX payload size for photos, and stale-session/socket recovery (app loses connections when backgrounded)
     \end{itemize}
 \end{frame}
 
