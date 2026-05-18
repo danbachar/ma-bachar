@@ -62,7 +62,7 @@
 
 \begin{frame}{Since last weekly}
     \begin{itemize}
-        \item Migrated BLE communincation layer from two separate central/peripheral plugins to one \code{grassroots\_bluetooth\_layer}: unified event model, shared discovery UUID, post-connect ANNOUNCE identity, and BLE role toggle.
+        \item Migrated BLE communication layer from two separate central/peripheral plugins to one \code{grassroots\_bluetooth\_layer}: unified event model, shared discovery UUID, post-connect ANNOUNCE identity, and BLE role toggle.
         \item Reworked UDX into a dual-stack Internet transport: IPv4/IPv6 sockets, multi-candidate addresses, live network/public-address refresh, and best candidate-pair selection.
         \item Aligned rendezvous/NAT traversal with GLP Networking API doc: two-sided punch, RV fan-out (A and B try each others' RV servers when the connection breaks), friends-of-friends mediation (friends can facilitate rendezvous for mutual friends).
         \item Persist friend data in encrypted local storage so that connections can be initiated post restart.
@@ -151,9 +151,6 @@
 \relaybar{3.5}{4.2}{7.2}{OOB identity}{TUMOrange}
 \relaybar{2.7}{7.2}{12.0}{GLP integration}{TUMBlue}
 
-\draw[red!75!black, line width=1.1pt] (4.2,0.25) -- (4.2,7.1);
-
-\draw[red!75!black, line width=0.9pt, dashed] (12,0.25) -- (12,7.1);
 \end{tikzpicture}
 }
 
@@ -163,7 +160,7 @@
 \tiny
 \begin{itemize}
   \setlength\itemsep{0.12em}
-  \item \textbf{Test/stabilize:} run multiple devices across Wi-Fi, cellular, IPv4/IPv6, NATs, roaming, foreground/background transitions.
+  \item \textbf{Test/stabilize:} run multiple devices across Wi-Fi, cellular, IPv4/IPv6, NATs, roaming, foreground/background transitions, and UDX connection migration.
   \item \textbf{Trust relay:} implement relay modes: open relay, friends-only relay, and GPS-defined trusted zones.
   \item \textbf{Background RV/WCF:} keep rendezvous anchors and well-connected friends useful while the app is backgrounded.
 \end{itemize}

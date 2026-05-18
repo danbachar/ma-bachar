@@ -1,58 +1,86 @@
 \begin{frame}{Architecture}
     \centering
-    \resizebox{!}{0.33\textheight}{ % Resizes height to 1/3 of the text height, aspect ratio preserved
+    \resizebox{\textwidth}{!}{
         \begin{tikzpicture}[
             stack/.style={
-                draw, 
-                thick, 
-                minimum height=1.2cm, 
-                font=\sffamily\Huge,
+                draw=TUMBlue!70!black,
+                thick,
+                rounded corners=2pt,
+                minimum height=0.54cm,
+                font=\sffamily\large,
                 align=center,
                 outer sep=0pt,
-                inner xsep=0pt,
-                inner ysep=10pt
+                inner xsep=8pt,
+                inner ysep=2pt,
+                fill=white
+            },
+            shared/.style={
+                stack,
+                minimum width=11.6cm
+            },
+            transport/.style={
+                stack,
+                minimum width=5.4cm,
+                fill=TUMBlue!4
+            },
+            subtransport/.style={
+                stack,
+                minimum width=2.55cm,
+                fill=TUMBlue!2,
+                font=\sffamily\normalsize
+            },
+            bearer/.style={
+                stack,
+                minimum width=2.45cm,
+                fill=TUMDarkerGreen!5,
+                font=\sffamily\normalsize
             },
             arrow/.style={
-                ->, 
-                >=stealth, 
+                ->,
+                >=stealth,
                 thick
             }
         ]
 
-            % --- Layer 1: Bottom (BLE, Cellular, WLAN) ---
-            \node[stack, minimum width=3.2cm] (ble) at (-3.7,0) {BLE};
-            \node[stack, minimum width=3.2cm] (cellular) at (0,0) {Cellular};
-            \node[stack, minimum width=3.2cm] (wlan) at (3.7,0) {WLAN};
+            \node[shared, fill=TUMBlue!7] (glp) at (0,5.35) {GLP};
+            \node[shared, fill=gray!6] (gn) at (0,4.55) {GN (Grassroots Networking)};
+            \node[shared, fill=TUMOrange!8] (noise) at (0,3.75) {Noise};
 
-            % --- Layer 2: IP (Full Width) ---
-            \node[stack, minimum width=10.6cm] (ip) at (0,2) {IP};
+            \node[transport] (ble) at (-3.05,2.85) {BLE};
+            \node[transport] (udx) at (3.05,2.85) {UDX};
 
-            % --- Layer 3: UDP with TLS to the right ---
-            \node[stack, minimum width=7.6cm] (udp) at (-1.5,4) {UDP};
-            \node[stack, minimum width=2.5cm] (noise) at (4.05,4) {Noise};
+            \node[subtransport] (central) at (-4.45,1.95) {Central\\scanning};
+            \node[subtransport] (peripheral) at (-1.65,1.95) {Peripheral\\advertising};
 
-            % --- Layer 4: Top (GSN - Full Width) ---
-            \node[stack, minimum width=10.6cm] (gsn) at (0,6) {GSN};
+            \node[transport, fill=TUMBlue!2] (udp) at (3.05,1.95) {UDP NAT traversal};
+            \node[transport, fill=TUMBlue!2] (ip) at (3.05,1.05) {IP};
 
-            % --- Arrows (Downward) ---
-            % From GSN to UDP
-            \draw[arrow] (gsn.south -| udp.north) -- (udp.north);
-            \draw[arrow] (gsn.south -| noise.north) -- (noise.north);
+            \node[bearer] (wlan) at (1.65,0.15) {WLAN};
+            \node[bearer] (cellular) at (4.45,0.15) {Cellular};
 
-            % From UDP to IP
-            \draw[arrow] (udp.south) -- (udp.south |- ip.north);
+            \draw[arrow] (glp) -- (gn);
+            \draw[arrow] (gn) -- (noise);
 
-            % From IP to BLE, Cellular, WLAN
-            \draw[arrow] (ip.south -| ble.north) -- (ble.north);
-            \draw[arrow] (ip.south -| cellular.north) -- (cellular.north);
+            \draw[arrow] (noise.south -| ble.north) -- (ble.north);
+            \draw[arrow] (noise.south -| udx.north) -- (udx.north);
+
+            \draw[arrow] (ble.south -| central.north) -- (central.north);
+            \draw[arrow] (ble.south -| peripheral.north) -- (peripheral.north);
+
+            \draw[arrow] (udx) -- (udp);
+            \draw[arrow] (udp) -- (ip);
             \draw[arrow] (ip.south -| wlan.north) -- (wlan.north);
+            \draw[arrow] (ip.south -| cellular.north) -- (cellular.north);
 
         \end{tikzpicture}
     }
+    \vspace{0.2em}
+    {\footnotesize
     \begin{itemize}
-        \item Connect two peer devices according to priority and proximity pair 
-        \item Dual-stack network comms: BLE first, Cellular (5G/LTE) and WLAN second
-        \item In close range, use BLE for signaling to establish UDP connection
-        \item ICE-similar stack for address reflection, hole-punching using friends
+        \setlength\itemsep{0.05em}
+        \item GN uses Noise to establish secure sessions over BLE or UDX.
+        \item BLE operates through central scanning and peripheral advertising roles.
+        \item UDX uses UDP for NAT traversal over IP, carried by WLAN or cellular.
     \end{itemize}
+    }
 \end{frame}
