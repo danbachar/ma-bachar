@@ -46,13 +46,13 @@
 
 \begin{frame}{Since mid-April: Flutter project work}
     \begin{itemize}
-        \item Built the transport around cryptographic identity: Ed25519 public keys as peer identity and signed packets as the basic trust object.
-        \item Implemented BLE discovery and nearby messaging, including configurable BLE central/peripheral roles for device testing.
-        \item Added UDP/UDX connectivity plumbing for longer-range friend communication and an Internet-scale baseline.
-        \item Added NAT traversal support: public address discovery, well-connected friend facilitators, hole-punching state, reconnect signaling, and rendezvous coordination.
-        \item Added friendship state in Redux: pending/accepted friendships, persistence, unfriend handling, friends-of-friends, and friend-shared rendezvous servers.
-        \item Added Noise sessions for hop-level channel security between connected peers.
-        \item Added delivery machinery: ACK/read receipts, fragmentation/reassembly for larger payloads, duplicate suppression, and routing tests.
+        \item Migrated BLE from separate central/peripheral plugins to one \mbox{grassroots\_bluetooth\_layer}: unified event model, shared discovery UUID, post-connect ANNOUNCE identity, and BLE role toggle.
+        \item Reworked UDX into a dual-stack Internet transport: IPv4/IPv6 sockets, multi-candidate addresses, live network/public-address refresh, and best candidate-pair selection.
+        \item Aligned rendezvous/NAT traversal with GLP: RECONNECT/AVAILABLE matching, two-sided PUNCH\_INITIATE, addrReflect registration proof, and RV fan-out.
+        \item Added well-connected-friend and friends-of-friends mediation: friends can facilitate rendezvous only when the target was advertised through the friend graph.
+        \item Moved friend-shared rendezvous lists from PeerState to FriendshipState so RV\_LIST data is friendship-scoped, persisted, and survives restart.
+        \item Secured signaling with Noise XX across clients and rendezvous anchors, removing the plaintext configured-RV path.
+        \item Hardened delivery over UDX/BLE: ACKs after fragment reassembly, messageId through fragments, UDX packet framing/u32 lengths for photos, and stale-session/socket recovery.
     \end{itemize}
 \end{frame}
 
