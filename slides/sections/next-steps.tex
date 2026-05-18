@@ -44,15 +44,15 @@
     }
 }
 
-\begin{frame}{Since mid-April: two close projects}
+\begin{frame}{Since mid-April: Flutter project work}
     \begin{itemize}
         \item Built the transport around cryptographic identity: Ed25519 public keys as peer identity and signed packets as the basic trust object.
-        \item Stabilized a shared substrate: BLE discovery, friend relations, Noise sessions, fragmentation, receipts, and Redux-backed transport state.
-        \item Worked through NAT traversal: public address discovery, hole-punching, well-connected friends, and rendezvous-style coordination.
-        \item Separated the work into two related regimes: \textbf{city-scale BLE relation} and \textbf{Internet-scale UDX relation}.
-        \item Identified the common security need: relays and rendezvous helpers may route metadata, but only the final recipient should read content.
-        \item Framed the master thesis around BLE mobility and local relay evaluation, while preserving UDX as a comparison and Keidar--Shapiro research track.
-        \item Connected both tracks to opportunistic networking, grassroots systems, decentralization critiques, and blocklace-style accountability.
+        \item Implemented BLE discovery and nearby messaging, including configurable BLE central/peripheral roles for device testing.
+        \item Added UDP/UDX connectivity plumbing for longer-range friend communication and an Internet-scale baseline.
+        \item Added NAT traversal support: public address discovery, hole-punching state, reconnect signaling, and rendezvous coordination.
+        \item Added friendship state in Redux: pending/accepted friendships, persistence, unfriend handling, friends-of-friends, and friend-shared rendezvous servers.
+        \item Added Noise sessions for hop-level channel security between connected peers.
+        \item Added delivery machinery: ACK/read receipts, fragmentation/reassembly for larger payloads, duplicate suppression, and routing tests.
     \end{itemize}
 \end{frame}
 
