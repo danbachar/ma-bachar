@@ -1,18 +1,34 @@
 \newcommand{\relaytimelineaxis}[1]{%
     \draw[gray!45] (0,#1) -- (12,#1);
     \foreach \x/\label in {
-        0/{May 17},
-        2/{Jun 1},
-        4/{Jun 15},
-        6/{Jul 1},
-        8/{Jul 15},
-        10/{Aug 1},
-        12/{Aug 15}
+        0/{18.5},
+        2/{1.6},
+        4/{15.6},
+        6/{1.7},
+        8/{15.7},
+        10/{1.8},
+        12/{15.8}
     } {
         \draw[gray!55] (\x,#1-0.08) -- (\x,#1+0.08);
         \node[anchor=north, font=\tiny] at (\x,#1-0.12) {\label};
     }
 }
+\newcommand{\udxtimelineaxis}[1]{%
+    \draw[gray!45] (0,#1) -- (12,#1);
+    \foreach \x/\label in {
+        0/{18.5},
+        0.6/{24.5},
+        1.2/{31.5},
+        4.2/{30.6},
+        7.2/{31.7},
+        10.0/{31.8},
+        12/{30.9}
+    } {
+        \draw[gray!55] (\x,#1-0.08) -- (\x,#1+0.08);
+        \node[anchor=north, font=\tiny] at (\x,#1-0.12) {\label};
+    }
+}
+
 
 \newcommand{\relaybar}[5]{%
     \fill[gray!4, rounded corners=1pt] (-2.45,#1-0.08) rectangle (12.15,#1+0.44);
@@ -99,38 +115,112 @@
 }
 \end{frame}
 
-\begin{frame}{Master gantt: thesis plus UDX track}
-    \centering
-    \resizebox{\textwidth}{!}{%
-        \begin{tikzpicture}[x=0.76cm,y=0.48cm]
-            \relaytimelineaxis{0}
+\begin{frame}{City-scale BLE thesis}
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[x=0.76cm,y=0.54cm]
+\relaytimelineaxis{0}
 
-            \trackheading{10.7}{City-scale BLE thesis}{TUMBlue}
-            \relaybar{9.8}{0.0}{2.4}{Scope/framing}{TUMBlue}
-            \relaybar{9.0}{0.5}{4.0}{Literature/threats}{TUMOrange}
-            \relaybar{8.2}{1.0}{5.0}{Sealed BLE relay}{TUMBlue}
-            \relaybar{7.4}{1.4}{6.9}{Mobility model}{TUMDarkerGreen}
-            \relaybar{6.6}{3.3}{7.4}{Friend prototype}{TUMBlue}
-            \relaybar{5.8}{5.6}{9.7}{Evaluation/thesis}{TUMOrange}
+\relaybar{8.0}{0.0}{2.4}{Scope/framing}{TUMBlue}
+\relaybar{7.2}{0.5}{4.0}{Literature/threats}{TUMOrange}
+\relaybar{6.4}{1.0}{5.0}{Sealed BLE relay}{TUMBlue}
+\relaybar{5.6}{1.4}{6.9}{Mobility model}{TUMDarkerGreen}
+\relaybar{4.8}{3.3}{7.4}{Friend prototype}{TUMBlue}
+\relaybar{4.0}{5.6}{9.7}{Evaluation}{TUMOrange}
+\relaybar{3.2}{8.0}{12.0}{Writing/submission}{TUMBlue}
 
-            \trackheading{4.7}{Internet-scale UDX relation}{TUMOrange}
-            \relaybar{3.9}{0.3}{4.1}{UDX baseline}{TUMOrange}
-            \relaybar{3.1}{1.4}{5.8}{Rendezvous risks}{TUMBlue}
-            \relaybar{2.3}{3.5}{8.1}{UDX relation model}{TUMDarkerGreen}
-            \relaybar{1.5}{6.2}{10.0}{UDX/BLE comparison}{TUMOrange}
-            \relaybar{0.7}{9.0}{12.0}{PhD handoff deck}{TUMBlue}
+\draw[red!75!black, line width=0.9pt] (9.6,0.25) -- (9.6,9.2);
+\node[anchor=south, rotate=90, font=\tiny, red!75!black] at (9.55,9.25) {full draft};
 
-            \draw[red!75!black, line width=0.9pt] (9.6,0.25) -- (9.6,11.1);
-            \node[anchor=south, rotate=90, font=\tiny, red!75!black] at (9.55,11.15) {full draft};
+\draw[red!75!black, line width=1.1pt] (12,0.25) -- (12,9.2);
+\node[anchor=south, rotate=90, font=\tiny, red!75!black] at (11.95,9.25) {submission};
+\end{tikzpicture}
+}
+\vspace{0.3em}
+\end{frame}
 
-            \draw[red!75!black, line width=1.1pt] (12,0.25) -- (12,11.1);
-            \node[anchor=south, rotate=90, font=\tiny, red!75!black] at (11.95,11.15) {submission};
-        \end{tikzpicture}
-    }
-    \vspace{0.3em}
-    \begin{itemize}
-        \item Thesis core: BLE mobility and secure local relay; Keidar--Shapiro thread: keep UDX as an Internet-scale relation model and comparison.
-    \end{itemize}
+\begin{frame}{Internet-scale UDX implementation}
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[x=0.76cm,y=0.58cm]
+\udxtimelineaxis{0}
+
+\relaybar{5.9}{0.0}{0.6}{Test/stabilize}{TUMOrange}
+\relaybar{5.1}{0.6}{1.2}{Trust relay}{TUMBlue}
+\relaybar{4.3}{1.2}{4.2}{Background RV/WCF}{TUMDarkerGreen}
+\relaybar{3.5}{4.2}{7.2}{OOB identity}{TUMOrange}
+\relaybar{2.7}{7.2}{12.0}{GLP integration}{TUMBlue}
+
+\draw[red!75!black, line width=1.1pt] (4.2,0.25) -- (4.2,7.1);
+
+\draw[red!75!black, line width=0.9pt, dashed] (12,0.25) -- (12,7.1);
+\end{tikzpicture}
+}
+
+\vspace{0.25em}
+\begin{columns}[T,totalwidth=\textwidth]
+\begin{column}{0.49\textwidth}
+\tiny
+\begin{itemize}
+  \setlength\itemsep{0.12em}
+  \item \textbf{Test/stabilize:} run multiple devices across Wi-Fi, cellular, IPv4/IPv6, NATs, roaming, foreground/background transitions.
+  \item \textbf{Trust relay:} implement relay modes: open relay, friends-only relay, and GPS-defined trusted zones.
+  \item \textbf{Background RV/WCF:} keep rendezvous anchors and well-connected friends useful while the app is backgrounded.
+\end{itemize}
+\end{column}
+\begin{column}{0.49\textwidth}
+\tiny
+\begin{itemize}
+  \setlength\itemsep{0.12em}
+  \item \textbf{OOB identity:} peer links for identity exchange, intent binding, and bootstrapping friendship/connection state.
+  \item \textbf{GLP integration:} expose the stabilized transport and rendezvous behavior through the GLP Networking API.
+\end{itemize}
+\end{column}
+\end{columns}
+
+\vspace{0.15em}
+\end{frame}
+
+\begin{frame}{Internet-scale UDX: possible extensions}
+\begin{columns}[T,totalwidth=\textwidth]
+\begin{column}{0.49\textwidth}
+\small
+\textbf{\textcolor{TUMBlue}{Transport and discovery}}
+\begin{itemize}
+  \setlength\itemsep{0.25em}
+  \item \textbf{BLE discovery optimization:} energy-aware scan/advertise duty cycling without losing too many encounters.
+  \item \textbf{Dual-transport selection:} choose BLE or UDX per message based on reachability, latency, trust, cost, and payload size.
+  \item \textbf{Cost-aware routing:} quantify bytes, battery, retries, relay load, and latency per delivered message.
+\end{itemize}
+
+\vspace{0.4em}
+\textbf{\textcolor{TUMBlue}{Measurement}}
+\begin{itemize}
+  \setlength\itemsep{0.25em}
+  \item \textbf{Well-connected friends:} characterize which peers can realistically help with signaling and rendezvous.
+  \item \textbf{Grassroots NAT study:} measure NAT behavior, address churn, IPv4/IPv6 availability, and hole-punch success.
+\end{itemize}
+\end{column}
+
+\begin{column}{0.49\textwidth}
+\small
+\textbf{\textcolor{TUMOrange}{Trust and identity}}
+\begin{itemize}
+  \setlength\itemsep{0.25em}
+  \item \textbf{Out-of-band identity exchange:} peer links should carry intent/attestation, not only a public key.
+  \item \textbf{Friend-based relay:} safest relay mode; reduce attack surface with sealed forwarding and minimal visible metadata.
+  \item \textbf{Geographic trust zones:} conferences, workplaces, or classrooms where local strangers may be acceptable relays.
+  \item \textbf{Stranger relay:} highest-risk mode, but useful for emergency, protest, or disaster-connectivity scenarios.
+  \item \textbf{Relay by trust level:} adapt forwarding policy to friend, trusted-zone, or stranger context.
+\end{itemize}
+\end{column}
+\end{columns}
+
+\vspace{0.4em}
+\begin{center}
+\small
+\textbf{Research question:} once the system is stable, which relay and transport choices improve delivery enough to justify their cost and abuse surface?
+\end{center}
 \end{frame}
 
 \begin{frame}{PhD runway: two relation systems}
