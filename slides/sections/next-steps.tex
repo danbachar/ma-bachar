@@ -15,11 +15,17 @@
 }
 
 \newcommand{\relaybar}[5]{%
-    \fill[gray!4, rounded corners=1pt] (-1.85,#1-0.08) rectangle (12.15,#1+0.44);
+    \fill[gray!4, rounded corners=1pt] (-2.45,#1-0.08) rectangle (12.15,#1+0.44);
     \draw[gray!26, line width=0.25pt] (-0.05,#1+0.18) -- (12.05,#1+0.18);
-    \node[anchor=east, align=right, text width=1.55cm, font=\scriptsize] at (-0.25,#1+0.18) {#4};
+    \node[anchor=east, align=right, text width=2.15cm, font=\tiny] at (-0.25,#1+0.18) {#4};
     \filldraw[draw=#5!85!black, fill=#5!70, rounded corners=1pt]
         (#2,#1) rectangle (#3,#1+0.36);
+}
+
+\newcommand{\trackheading}[3]{%
+    \draw[#3!55!black, line width=0.5pt] (0,#1) -- (12.05,#1);
+    \node[anchor=west, font=\scriptsize\bfseries, text=#3!85!black, fill=white, inner sep=1pt]
+        at (0,#1+0.17) {#2};
 }
 
 \newcommand{\phdaxis}[1]{%
@@ -38,19 +44,19 @@
     }
 }
 
-\begin{frame}{Since mid-April: what we converged on}
+\begin{frame}{Since mid-April: two close projects}
     \begin{itemize}
         \item Built the transport around cryptographic identity: Ed25519 public keys as peer identity and signed packets as the basic trust object.
-        \item Stabilized the dual-stack direction: BLE discovery and nearby direct messaging, with \mbox{UDP/UDX} explored for longer-range connectivity.
+        \item Stabilized a shared substrate: BLE discovery, friend relations, Noise sessions, fragmentation, receipts, and Redux-backed transport state.
         \item Worked through NAT traversal: public address discovery, hole-punching, well-connected friends, and rendezvous-style coordination.
-        \item Added delivery machinery: ACK/read receipts, fragmentation for large payloads, Redux-backed peer/transport/message/friendship state.
-        \item Added Noise sessions as hop-level channel security, then identified why relaying needs a separate end-to-end sealed message envelope.
-        \item Reframed the thesis around a BLE-only path: remove UDP, analyze friend-based relaying, and compare it with direct BLE and open stranger relay.
-        \item Connected the research plan to opportunistic networking, Sybil/misbehavior defenses, and Shapiro--Keidar work on grassroots/blocklace systems.
+        \item Separated the work into two related regimes: \textbf{city-scale BLE relation} and \textbf{Internet-scale UDX relation}.
+        \item Identified the common security need: relays and rendezvous helpers may route metadata, but only the final recipient should read content.
+        \item Framed the master thesis around BLE mobility and local relay evaluation, while preserving UDX as a comparison and Keidar--Shapiro research track.
+        \item Connected both tracks to opportunistic networking, grassroots systems, decentralization critiques, and blocklace-style accountability.
     \end{itemize}
 \end{frame}
 
-\begin{frame}{Mobility model: BLE-only relay}
+\begin{frame}{Mobility model: city-scale BLE relay}
     \centering
     \resizebox{\textwidth}{!}{%
         \begin{tikzpicture}[
@@ -92,50 +98,58 @@
     }
 \end{frame}
 
-\begin{frame}{Master thesis gantt: submission on 15 Aug 2026}
+\begin{frame}{Master gantt: thesis plus UDX track}
     \centering
     \resizebox{\textwidth}{!}{%
-        \begin{tikzpicture}[x=0.78cm,y=0.56cm]
+        \begin{tikzpicture}[x=0.76cm,y=0.48cm]
             \relaytimelineaxis{0}
 
-            \relaybar{6.0}{0.0}{2.5}{Scope}{TUMBlue}
-            \relaybar{5.2}{0.4}{3.8}{Literature\\and threats}{TUMOrange}
-            \relaybar{4.4}{1.0}{4.8}{BLE-only\\sealed relay}{TUMBlue}
-            \relaybar{3.6}{1.4}{6.7}{Mobility\\model}{TUMDarkerGreen}
-            \relaybar{2.8}{3.2}{7.2}{Friend-relay\\prototype}{TUMBlue}
-            \relaybar{2.0}{5.6}{9.7}{Comparative\\evaluation}{TUMOrange}
-            \relaybar{1.2}{1.9}{12.0}{Writing\\and revision}{TUMDarkerGreen}
+            \trackheading{10.7}{City-scale BLE thesis}{TUMBlue}
+            \relaybar{9.8}{0.0}{2.4}{Scope/framing}{TUMBlue}
+            \relaybar{9.0}{0.5}{4.0}{Literature/threats}{TUMOrange}
+            \relaybar{8.2}{1.0}{5.0}{Sealed BLE relay}{TUMBlue}
+            \relaybar{7.4}{1.4}{6.9}{Mobility model}{TUMDarkerGreen}
+            \relaybar{6.6}{3.3}{7.4}{Friend prototype}{TUMBlue}
+            \relaybar{5.8}{5.6}{9.7}{Evaluation/thesis}{TUMOrange}
 
-            \draw[red!75!black, line width=0.9pt] (9.6,0.55) -- (9.6,6.65);
-            \node[anchor=south, rotate=90, font=\tiny, red!75!black] at (9.55,6.7) {full draft};
+            \trackheading{4.7}{Internet-scale UDX relation}{TUMOrange}
+            \relaybar{3.9}{0.3}{4.1}{UDX baseline}{TUMOrange}
+            \relaybar{3.1}{1.4}{5.8}{Rendezvous risks}{TUMBlue}
+            \relaybar{2.3}{3.5}{8.1}{UDX relation model}{TUMDarkerGreen}
+            \relaybar{1.5}{6.2}{10.0}{UDX/BLE comparison}{TUMOrange}
+            \relaybar{0.7}{9.0}{12.0}{PhD handoff deck}{TUMBlue}
 
-            \draw[red!75!black, line width=1.1pt] (12,0.55) -- (12,6.65);
-            \node[anchor=south, rotate=90, font=\tiny, red!75!black] at (11.95,6.7) {submission};
+            \draw[red!75!black, line width=0.9pt] (9.6,0.25) -- (9.6,11.1);
+            \node[anchor=south, rotate=90, font=\tiny, red!75!black] at (9.55,11.15) {full draft};
+
+            \draw[red!75!black, line width=1.1pt] (12,0.25) -- (12,11.1);
+            \node[anchor=south, rotate=90, font=\tiny, red!75!black] at (11.95,11.15) {submission};
         \end{tikzpicture}
     }
     \vspace{0.3em}
     \begin{itemize}
-        \item Minimum contribution: secure relay design, mobility model, comparison, and critical security analysis.
+        \item Thesis core: BLE mobility and secure local relay; Keidar--Shapiro thread: keep UDX as an Internet-scale relation model and comparison.
     \end{itemize}
 \end{frame}
 
-\begin{frame}{PhD runway: three-year research arc}
+\begin{frame}{PhD runway: two relation systems}
     \centering
     \resizebox{\textwidth}{!}{%
         \begin{tikzpicture}[x=0.78cm,y=0.58cm]
             \phdaxis{0}
 
-            \relaybar{6.0}{0.0}{3.4}{Measurement\\and BLE relay}{TUMBlue}
-            \relaybar{5.2}{1.2}{4.5}{Social\\routing}{TUMDarkerGreen}
-            \relaybar{4.4}{3.8}{7.5}{Adversarial\\relay model}{TUMOrange}
-            \relaybar{3.6}{5.0}{8.6}{Blocklace\\control plane}{TUMBlue}
-            \relaybar{2.8}{7.5}{10.4}{Deployment\\and GLP}{TUMDarkerGreen}
-            \relaybar{2.0}{9.3}{12.0}{Dissertation\\and defense}{TUMOrange}
+            \relaybar{6.0}{0.0}{3.2}{City-scale\\BLE measurement}{TUMBlue}
+            \relaybar{5.2}{0.0}{4.4}{Internet-scale\\UDX relation}{TUMOrange}
+            \relaybar{4.4}{2.5}{5.8}{Unified\\relation model}{TUMDarkerGreen}
+            \relaybar{3.6}{4.4}{7.7}{Adversarial\\relay/rendezvous}{TUMOrange}
+            \relaybar{2.8}{5.6}{9.0}{Blocklace\\control plane}{TUMBlue}
+            \relaybar{2.0}{7.7}{10.7}{Deployment\\and GLP}{TUMDarkerGreen}
+            \relaybar{1.2}{9.6}{12.0}{Dissertation\\synthesis}{TUMOrange}
 
             \foreach \x/\label in {
-                3.4/{paper 1},
-                7.5/{paper 2},
-                10.4/{deployment},
+                3.2/{paper 1},
+                5.8/{paper 2},
+                9.0/{system},
                 12/{defense}
             } {
                 \draw[red!75!black, line width=0.9pt] (\x,0.55) -- (\x,6.65);
@@ -145,6 +159,6 @@
     }
     \vspace{0.3em}
     \begin{itemize}
-        \item Thesis-to-PhD bridge: from "does BLE relay work?" to "can grassroots social trust make mobile relaying secure and abuse-resistant?"
+        \item Thesis-to-PhD bridge: compare what grassroots relations mean under local physical mobility and under Internet-scale UDX connectivity.
     \end{itemize}
 \end{frame}
