@@ -1,0 +1,65 @@
+\RequirePackage[l2tabu,orthodox]{nag}
+
+% TODO: decide if one-sided/two-sided
+%\documentclass[headsepline,footsepline,footinclude=false,fontsize=11pt,paper=a4,listof=totoc,bibliography=totoc,BCOR=12mm,DIV=12]{scrbook} % two-sided % original source stated: BCOR=12mm,DIV=12
+\documentclass[headsepline,footsepline,footinclude=false,oneside,fontsize=11pt,paper=a4,listof=totoc,bibliography=totoc,DIV=12]{scrbook} % one-sided
+
+% TODO: change citation style in settings
+\input{settings}
+
+% TODO: change thesis information
+\newcommand*{\getUniversity}{Technische Universität München}
+\newcommand*{\getFaculty}{School of Computation, Information and Technology — Informatics}
+\newcommand*{\getTitle}{An Overlay for Social Networks based on Directed Acyclic Graphs on the Edge}
+\newcommand*{\getTitleGer}{Ein Overlay für soziale Netzwerke auf der Grundlage gerichteter azyklischer Graphen auf der Kante}
+\newcommand*{\getAuthor}{Dan Bachar}
+\newcommand*{\getDoctype}{Master's Thesis in Informatics}
+\newcommand*{\getExaminer}{Prof. Dr.-Ing. Jörg Ott}
+\newcommand*{\getExternSupervisor}{Prof. Dr. Idit Keidar}
+\newcommand*{\getAdvisor}{Dr. David Guzman}
+\newcommand*{\getSubmissionDate}{15.8.2026}
+\newcommand*{\getSubmissionLocation}{Munich}
+
+\begin{document}
+
+\selectlanguage{english}
+
+% Set page numbering to avoid "destination with the same identifier has been already used" warning for cover page.
+% (see https://en.wikibooks.org/wiki/LaTeX/Hyperlinks#Problems_with_Links_and_Pages).
+\pagenumbering{alph}
+\input{pages/cover}
+
+\frontmatter{}
+
+\input{pages/title}
+\input{pages/disclaimer}
+\input{pages/acknowledgements} % TODO: if you don't have anyone to thank for or don't wish to publish it, comment this line out.
+\input{pages/abstract}
+\input{chapters/abstract}
+\microtypesetup{protrusion=false}
+\tableofcontents{}
+\microtypesetup{protrusion=true}
+
+\mainmatter{}
+
+\input{chapters/related}
+\input{chapters/problem}
+\input{chapters/architecture}
+\input{chapters/testbed}
+\input{chapters/evaluation}
+\input{chapters/discussion}
+\input{chapters/conclusion}
+
+\appendix{}
+
+% TODO: appendix chapter
+\input{pages/appendix}
+
+\microtypesetup{protrusion=false}
+\listoffigures{}
+\listoftables{}
+\microtypesetup{protrusion=true}
+\printglossaries
+\printbibliography{bibliography.bib}
+
+\end{document}

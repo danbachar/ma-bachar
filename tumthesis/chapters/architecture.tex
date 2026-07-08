@@ -27,18 +27,18 @@ a demonstrator chat app under `lib/*.dart`).
 
             % --- Layer 1: Bottom (BLE, Cellular, WLAN) ---
             \node[stack, minimum width=3cm] (ble) {BLE};
-            \node[stack, minimum width=3cm, right=0.5cm of ble] (cellular) {Cellular};
-            \node[stack, minimum width=3cm, right=0.5cm of cellular] (wlan) {WLAN};
+            \node[stack, minimum width=3cm, anchor=west] (cellular) at ($(ble.east)+(0.5cm,0)$) {Cellular};
+            \node[stack, minimum width=3cm, anchor=west] (wlan) at ($(cellular.east)+(0.5cm,0)$) {WLAN};
 
             % --- Layer 2: IP (Full Width) ---
-            \node[stack, minimum width=10cm, above=0.8cm of ble.north west, anchor=south west] (ip) {IP};
+            \node[stack, minimum width=10cm, anchor=south west] (ip) at ($(ble.north west)+(0,0.8cm)$) {IP};
 
             % --- Layer 3: UDP with TLS to the right ---
-            \node[stack, minimum width=7cm, above=0.8cm of ip.north west, anchor=south west] (udp) {UDP};
-            \node[stack, minimum width=2.5cm, above=0.8cm of ip.north east, anchor=south east] (noise) {Noise};
+            \node[stack, minimum width=7cm, anchor=south west] (udp) at ($(ip.north west)+(0,0.8cm)$) {UDP};
+            \node[stack, minimum width=2.5cm, anchor=south east] (noise) at ($(ip.north east)+(0,0.8cm)$) {Noise};
 
             % --- Layer 4: Top (GSN - Full Width) ---
-            \node[stack, minimum width=10cm, above=0.8cm of udp.north west, anchor=south west] (gsn) {GSN};
+            \node[stack, minimum width=10cm, anchor=south west] (gsn) at ($(udp.north west)+(0,0.8cm)$) {GSN};
 
             % --- Arrows (Downward) ---
             % From GSN to UDP
@@ -59,7 +59,7 @@ a demonstrator chat app under `lib/*.dart`).
 % ```
 % ┌─────────────────────────────────────────────────────────────────────────┐
 % │  Application layer  (GSG / madGLP runtime; here: demo chat app)         │
-% │  • Consumes the GrassrootsNetwork façade                                │
+% │  • Consumes the GrassrootsNetwork façade + reads the Redux store        │
 % │  • Supplies opaque payloads (Blocks); renders peers, chats, settings    │
 % ├─────────────────────────────────────────────────────────────────────────┤
 % │  Coordinator  —  GrassrootsNetwork  (lib/src/grassroots_network.dart)   │
@@ -79,6 +79,12 @@ a demonstrator chat app under `lib/*.dart`).
 % ├─────────────────────────────────────────────────────────────────────────┤
 % │  Platform / hardware  (iOS & Android BLE radios, OS UDP sockets)        │
 % └─────────────────────────────────────────────────────────────────────────┘
+
+%            ┌──────────────────────────────────────────────┐
+%            │        Redux store (AppState)                │  ← cross-cutting:
+%            │  peers · transports · messages · friendships │    a strict projection
+%            │  · settings · signaling                      │    of transport facts
+%            └──────────────────────────────────────────────┘
 % ```
 
 \begin{itemize}
