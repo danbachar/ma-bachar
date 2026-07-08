@@ -8,14 +8,12 @@
     \item More?
 \end{itemize}
 
-introduce our basic environment assumptions, an analysis of the concrete problem at hand, and the design goals of the system.
-
 \section{Design Goals}
 \begin{itemize}
     \item Prefer local over remote communication
     \item When available, use the Internet-scale relation to relay messages over long distances
     \item Reduce attack interface for surveillance and monitoring as much as possible: expose the minimum amount of required information to facilitate communication
     \item Store-carry-forward: cache packets for unavailable recipients until a possible delivery attempt can be made
-    \item Use existing mobile infrastructure to facilitate Internet-scale communication: edge rendezvous points and hole-punching
+    \item Do not ignore existing mobile infrastructure to facilitate Internet-scale communication: edge rendezvous points and hole-punching
+    \item Because the application may be used in various circumstances, let the user decide on various security-critical settings (i.e. use cloud RV point, friends, introduction facilitation)
 \end{itemize}
-To formalize the setting, goals, and environment for this research paper, section~\ref{chap:problem} will introduce our basic assumptions, research question, and our approach to solve it.
