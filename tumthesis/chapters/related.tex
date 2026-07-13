@@ -4,11 +4,22 @@
 The State-of-the-Art section presents the papers that lay at the foundation at this research work, and positions it adverseraly. The sections in this chapter range will provide an overview over the communication mediums that we considered for this work: Bluetooth Classic, Bluetooth Low Energy, Bluetooth Mesh, Wi-Fi ad-hoc and Direct, and others. Next, this section continues with elaborating the networking assumptions that make this work possible, primarily discussing the difference between traditional packet-switching and the Store-Carry-Forward paradigm, that enables Delay-Tolerant Networking, while also presenting similar systems that have been developed using this paradigm. Followingly, we present main approaches that enable packet propagation in DTNs, explain each one of them, and show which one we used. Then, we present leading Decentralized Social Networks, and discuss whether they could have been used in our scenarios, showing that they actually cannot, and finally present the pinnacle: Grassroots Social Networks. Grassroots Social Networks lay at the core of this research work, and the networking layer presented here is a core work that lays at its foundation.
 \section{Peer-to-peer Communication Technologies}
 \label{sec:p2p-protocols}
-Wifi Adhoc, Wifi Direct, Wifi Aware, Bluetooth BDR, Bluetooth Low Energy, Power usage of BLE vs. Direct, NAT, Hole-punching
+To create the peer-to-peer communication platform, different technologies were evaluated based on the following criteria:
+\begin{itemize}
+    \item Spread of the protocol: As a user-facing tool, the communication medium had to be present in virtually all smartphones used today; thus, technologies that are supported by a handful of flagship smartphones, while being an interesting point for future work, are out of the question for this work.
+    \item Low power: the communication protocol should not use a high amount of power to propagate packets
+    \item Target: the communication protocol should be able to carry text messages efficiently, so a text message should be received within a short time in close range (e.g. 200KB in 1 second). 
+    \item Mobility: protocols neede to support a high node mobility stemming from the mobility patterns of the users
+    \item Infrastructure: there can be no external infrastructure necessary for the normal operation of the technology
+\end{itemize}
+Mobile Ad-Hoc Networks (MANETs) are networks established using an array of mobile devices that use the ad-hoc mode of their wireless network adapter to establish a spontaneous end-to-end connected, packet-switched network. MANETs, as well as VANETs and WANETs, have been extensively studied, with research going back to DARPA's usage of radio to transmit data packets. These elements were bulky, expensive, provided poor data rates, and handled node mobility poorly. Since their onset, MANETs have advanced to Vehicle Ad-Hoc Networks (VANETs), and Smartphone Ad-Hoc Networks (SPANs), behind at the forefront of state-of-the-art inter-vehicle communication. 
+MANETs today offer a generally higher data rate than DTNs, but their requirement of a continuously-connected end-to-end path between source and destination make it impossible here, as oftentimes users suffer from offline periods due to emergencies.
+MANET, Wifi Adhoc, Wifi Direct, Wifi Aware, Bluetooth BDR, Bluetooth Low Energy, Power usage of BLE vs. Direct, NAT, Hole-punching
 
 \section{Opportunistic Networking Systems}
 \label{sec:oppnet}
-Twimight, Emergency Broadcast, COVID contact tracing
+(MANET BATMAN) vs. Twimight, Emergency Broadcast, COVID contact tracing, Wifi-Opp
+
 
 \section{Routing in Opportunistic Networks}
 \label{sec:opp-routing}
