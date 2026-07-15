@@ -2,6 +2,7 @@
 \label{chap:sota}
 
 The State-of-the-Art section presents the papers that lay at the foundation at this research work, and positions it adverseraly. The sections in this chapter range will provide an overview over the communication mediums that we considered for this work: Bluetooth Classic, Bluetooth Low Energy, Bluetooth Mesh, Wi-Fi ad-hoc and Direct, and others. Next, this section continues with elaborating the networking assumptions that make this work possible, primarily discussing the difference between traditional packet-switching and the Store-Carry-Forward paradigm, that enables Delay-Tolerant Networking, while also presenting similar systems that have been developed using this paradigm. Followingly, we present main approaches that enable packet propagation in Delay Tolerant Networks (DTNs), explain each one of them, and show which one we used. Then, we present leading Decentralized Social Networks, and discuss whether they could have been used in our scenarios, showing that they actually cannot, and finally present the pinnacle: Grassroots Social Networks. Grassroots Social Networks lay at the core of this research work, and the networking layer presented here is a core work that lays at its foundation.
+
 \section{Peer-to-peer Communication Technologies}
 \label{sec:p2p-protocols}
 To create the peer-to-peer communication platform, different technologies were evaluated based on the following criteria:
@@ -12,19 +13,35 @@ To create the peer-to-peer communication platform, different technologies were e
     \item Mobility: protocols neede to support a high node mobility stemming from the mobility patterns of the users
     \item Infrastructure: there can be no external infrastructure necessary for the normal operation of the technology
 \end{itemize}
-Mobile Ad-Hoc Networks (MANETs) are infrastructure-less networks established using an array of battery-powered mobile devices that use the ad-hoc mode of their wireless network adapter to establish a spontaneous end-to-end connected, packet-switched network~\cite{Liu2026, Kindt2018}.
-In these networks, nodes act both as routers and hosts for data packets.
-MANETs, as well as Vehicle Ad-Hoc Networks (VANETs) and Smartphone Ad-Hoc Networks (SPANs), have been extensively studied, with research going back to DARPA's usage of radio to transmit data packets~\cite{Stotts2008}. These elements were bulky, expensive, provided poor data rates, and handled node mobility poorly.
-Since their onset, MANETs have advanced to VANETs, which deal with rapid topology changes arising due to a network established between fast-moving vehicles such as drone nets~\cite{Liu2026}, and SPANs, which focus on establishing networks around humans utilizing a commonly available resource, the smartphone.
-SPANs utilize commonly available infrastructure in normal commercial-grade smartphones to connect users without external infrastructure, by leveraging technologies like Wi-Fi Aware, Wi-Fi Direct~\cite{wifi-aware}, Bluetooth Classic, and Bluetooth Low Energy~\cite{bt-spec}, to facilitate critical communication during natural disasters, wars, protests, or Internet outages.
-Because they rely on no external infrastructure, SPANs are oftentimes proposed as the foundation to serverless grassroots social networks such as Bitchat~\cite{bitchat}, and indeed the idea behind SPANs and is tangential to the core of this research work: MANETs today offer a generally higher data rate than DTNs, but their requirement of a continuously-connected end-to-end path between source and destination make it impossible here, as oftentimes users suffer from offline periods due to emergencies.
-To route packets, MANETs usually relay on protocols that use topological knowledge of the nodes to efficiently route between them, being reactive to changes or working proactively to evaluate link states, and use out-of-band information like geological location~\cite{CMB-MANET}.
-An alternative to MANETs, DTNs have been proposed in communication-challenged regions where end-to-end path connectivity is lacking: research on DTNs was propelled by NASA for interplanetary travel; the Curiousity rover on Mars, a resource-constrained robot that has been travelling the surface of the red planet since 2012, has been using a DTN to convey pictures to Earth through a satellite orbiting the planet. Instead of wasting precious power on beaming a transmission directly to Earth, the Curiosity rover stores the transmission until the satellite is optimally located orthogonally over it, before sending the satellite its data packets. The satellite then carries the packets until it is at an optimal orbit to Earth. The final transmission between the satellite and Earth completes the communciation cycle, enabling the rover to continue to explore Mars for ten years after the end of its intended two-year mission.
-The concept that thus lies at the core of DTNs is the Store-Carry-Forward paradigm, which stands in stark contrast to the immediacy requirements of normal packet routing: in standard packet routing, all nodes participating in a transmission between source and destination need to be connected and online concurrently; in DTN routing, the networking graph can be partially offline for extensive periods of time while nodes carry the transmissions.
-Similarly to MANETs, DTNs also suffer from communication overheads that arise due to control messages, and are especially exacerbated by dense environments with many participants.
-In addition to space travel, DTNs have also enabled nomadic populace in northren Skandinavia the access to communication: the Sami people.
+To relay information directly between peer smartphones, the omnipresent Wi-Fi protocol was first investigated. Propelled by the Wi-Fi Alliance, WLAN is the wireless 802.11 protocol which enables most of the world's computers to communicate. Together with cellular-based mobile networks like 5G, home and commercial routers provide wireless radio access networks for mobile devices to connect to the Internet backbone through a multitude of devices: antennas (Radio Units), computers for signal processing (Distributed Units), base stations (Centralized Units), and more~\cite{5g}.
+For the standard Internet-backbone to function, all the aforementioned infrastructure units need to have a constant stream of power, an unblocked radio spectrum, and operational staff. In emergency scenarios such as natural disasters, wars, or politically-motivated violence against the freedom of speech through censorship, media control, or monitoring, the aforementioned infrastructure might not be available for usage.
+As alternatives to the classical Wi-Fi WLAN technology to facilitate DTNs, we evaluated the following p2p communication media based on the aforementioned common criteria: Wifi Adhoc, Wifi Direct, Wifi Aware, Bluetooth BDR, Bluetooth Low Energy.
+Legacy \textbf{Wi-Fi Ad-Hoc (Independent Basic Service Set / IBSS mode)} was the original framework designed for direct peer-to-peer wireless communication. However, it suffered from several notable architectural shortcomings, including a lack of modern Quality of Service (QoS), inefficient power management (which lacked sophisticated sleep cycles), a lack of robust security mechanisms, and the requirement for devices to manually decide whether to act as the access point or a client.  It was eventually replaced by \textbf{Wi-Fi Direct}, which modernized peer-to-peer connectivity by adding better security, structured QoS, and an autonomous negotiation protocol that allows connecting devices to automatically determine which one takes over the role of the access point. However, a significant limitation of Wi-Fi Direct on modern mobile platforms is that it does not support device discovery in the background if the utilizing application is stopped or not actively running in the foreground.  \textbf{Wi-Fi Aware} (also known as \textbf{Neighbor Awareness Networking / NAN}) overcomes this background limitation by utilizing a highly power-efficient \emph{``discover-before-connect''} paradigm. Unlike Wi-Fi Direct, Wi-Fi Aware allows devices to automatically organize into synchronized local clusters and use a publish-and-subscribe mechanism to discover nearby services and exchange lightweight messages in the background, all without establishing a formal network connection. Because it operates without maintaining an active connection state, it has a significantly lower power and memory footprint. If devices need to share large amounts of data, they can seamlessly upgrade their discovery session into a fully bi-directional, high-throughput network connection.
+Positioning itself as the most appropriate for our use-case, Wi-Fi Aware has been a very possible candidate; however support for it on iOS was only recently introduced, and thus it was deemed not widely supported enough.
 
-MANET, Wifi Adhoc, Wifi Direct, Wifi Aware, Bluetooth BDR, Bluetooth Low Energy, Power usage of BLE vs. Direct, NAT, Hole-punching
+
+\newcommand{\pmark}{$\sim$}    % partial / conditional
+
+\begin{table}[htbp]
+    \centering
+    \caption{Evaluation of peer-to-peer communication technologies against the selection criteria.}
+    \label{tab:p2p-criteria}
+    \begin{tabular}{@{}l*{5}{P{1.6cm}}@{}}
+        \toprule
+        \thead[l]{Technology} & \thead{Spread} & \thead{Low\\power} & \thead{Target\\throughput} & \thead{Mobility} & \thead{No infra-\\structure} \\
+        \midrule
+        Wi-Fi Ad-Hoc          &  &  &  &  &  \\
+        Wi-Fi Direct          &  &  &  &  &  \\
+        Wi-Fi Aware           &  &  &  &  &  \\
+        Bluetooth Classic     &  &  &  &  &  \\
+        Bluetooth Low Energy  &  &  &  &  &  \\
+        \bottomrule
+    \end{tabular}
+    \\[0.5em]
+    {\footnotesize \cmark{}~fully met \quad \pmark{}~partially met \quad \xmark{}~not met}
+\end{table}
+
+Power usage of BLE vs. Direct, NAT, Hole-punching
 
 \section{Opportunistic Networking Systems}
 \label{sec:oppnet}
