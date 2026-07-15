@@ -1,3 +1,89 @@
 \chapter{Testbed}
 \label{chap:testbed}
-To evaluate the system architecture, we deployed it as a mobile application on a limited testbed of Android and iOS devices. During the deployment, usage statistics were recorded and uploaded to a secure TUM server on an opt-in basis. 
+To evaluate the system architecture, we deployed it as a mobile application on a limited testbed of Android and iOS devices. During the deployment, usage statistics were recorded and uploaded to a secure TUM server on an opt-in basis.
+
+\section{CS1 --- Multi-hop reach: latency \& delivery vs hop count}
+
+\paragraph{Question.} Does the mesh actually extend range beyond one radio hop, and at
+what latency cost?
+
+\paragraph{Setup.} Line topology A--B--C--D--E (allowlist or separation) $\to$ 1--4 hops.
+
+\paragraph{Procedure.} Fixed-size messages A$\to$B, A$\to$C, A$\to$D, A$\to$E; many repetitions; repeat
+with an unfragmented ($\leq$442\,B) and a fragmented (multi-packet) payload.
+
+\paragraph{Measures.} \texttt{message dir=recv} (\texttt{relayHops}, \texttt{deliveryMethod}),
+\texttt{dir=delivered} (\texttt{e2eLatencyMs}), \texttt{dir=ack\_timeout} (failures).
+
+\paragraph{Output.} Latency CDF per hop count; delivery ratio per hop count;
+fragmentation penalty as a second series.
+
+\section{CS3 --- The cost of managed flooding: total mesh effort}
+
+\paragraph{Question.} How many on-air transmissions does one delivered message cost,
+and how effective are the flood controls?
+
+\paragraph{Setup.} Same message workload run under three topologies: full mesh, line,
+star.
+
+\paragraph{Procedure.} Join \texttt{relay} records across devices on \texttt{packetId} (equals
+\texttt{messageId} for single-packet messages).
+
+\paragraph{Measures.} Total effort = origin \texttt{sent.fanout} + $\Sigma$ \texttt{relay action=relayed fanout}; redundancy absorbed = \texttt{suppressed\_dup} (relay side) + \texttt{message dir=dup} (recipient side); flood-control hits = \texttt{suppressed\_ttl} /
+\texttt{suppressed\_budget}.
+
+\paragraph{Output.} Transmissions-per-delivery vs node degree; suppression breakdown;
+relay load per node (the middle-node burden in the line).
+
+\section{CS4 --- Battery: the price of relaying for strangers}
+
+\paragraph{Question.} What does open relaying cost a node that neither sends nor
+receives?
+
+\paragraph{Setup.} Line topology; B--D relay everything, A/E are endpoints. Baselines:
+app idle (no traffic), app off.
+
+\paragraph{Procedure.} Fixed message rate for several hours per role; rotate roles
+across devices to cancel battery-health differences.
+
+\paragraph{Measures.} \texttt{device} samples (\texttt{batteryDrainPctPerHr}), \texttt{relay} records for
+per-node relay counts (correlate drain with effort).
+
+\paragraph{Output.} Drain rate per role (source / relay / sink / idle); drain vs
+relayed-packets-per-hour.
+
+\section{CS8 --- Churn \& real mobility: the field day}
+
+\paragraph{Question.} Does it all hold up under real human movement?
+
+\paragraph{Setup.} 5 participants, one office/campus floor, $\sim$6\,h. Zones with known
+radio relationships (pre-tested): Z1 office, Z2 lab (marginal reach to Z1),
+Z3 cafeteria (isolated).
+
+\paragraph{Procedure.} 15-min slot schedule per participant; workload driver runs the
+seeded-Poisson load throughout; traces auto-upload every 10 min.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lcccccl@{}}
+\toprule
+Window & A & B & C & D & E & Produces \\
+\midrule
+09--10 & Z1 & Z1 & Z1 & Z1 & Z1 & full-mesh baseline \\
+10--11 & Z1 & Z1 & Z2 & Z2 & Z3 & stable partition; E isolated \\
+11--12 & Z1 & walker & Z2 & Z2 & Z3 & B mules Z1$\leftrightarrow$Z2 (10-min cycle) \\
+12--13 & Z3 & Z3 & Z3 & Z1 & Z1 & partition flip $\to$ DTN flush \\
+13--15 & \multicolumn{5}{c}{free movement} & natural churn \\
+\bottomrule
+\end{tabular}
+\caption{CS8 slot schedule per participant across the field day.}
+\label{tab:cs8-schedule}
+\end{table}
+
+\paragraph{Measures.} Everything: \texttt{message}, \texttt{relay}, \texttt{contact}, \texttt{density}, \texttt{buffer},
+\texttt{device}.
+
+\paragraph{Output.} Delivery-delay CDF split by direct/relayed/DTN; inter-contact CDF
+vs planned schedule; delivery ratio per window. \textbf{Headline criterion:} every
+message offered during the partition windows is delivered after the 12:00
+flip.

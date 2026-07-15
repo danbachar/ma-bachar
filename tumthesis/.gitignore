@@ -1,0 +1,30 @@
+# Build output
+build/
+
+# LaTeX intermediate/generated files (should never live in the repo root)
+*.aux
+*.bcf
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.glo
+*.gls
+*.glg
+*.acn
+*.acr
+*.alg
+*.lof
+*.log
+*.lot
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+*.xdy
+*.nav
+*.snm
+*.vrb
+
+# OS cruft
+.DS_Store
