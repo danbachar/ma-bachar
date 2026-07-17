@@ -13,18 +13,46 @@ To create the peer-to-peer communication platform, different technologies were e
     \item \textbf{C4} Mobility: protocols neede to support a high node mobility stemming from the mobility patterns of the users
     \item \textbf{C5} Infrastructure: there can be no external infrastructure necessary for the normal operation of the technology
 \end{itemize}
+\subsection{Wi-Fi}
 To relay information directly between peer smartphones, the omnipresent Wi-Fi protocol was first investigated. Propelled by the Wi-Fi Alliance, WLAN is the wireless 802.11 protocol which enables most of the world's computers to communicate. Together with cellular-based mobile networks like 5G, home and commercial routers provide wireless radio access networks for mobile devices to connect to the Internet backbone through a multitude of devices: antennas (Radio Units), computers for signal processing (Distributed Units), base stations (Centralized Units), and more~\cite{5g}.
 For the standard Internet-backbone to function, all the aforementioned infrastructure units need to have a constant stream of power, an unblocked radio spectrum, and operational staff. In emergency scenarios such as natural disasters, wars, or politically-motivated violence against the freedom of speech through censorship, media control, or monitoring, the aforementioned infrastructure might not be available for usage.
 As alternatives to the classical Wi-Fi WLAN technology to facilitate DTNs, we evaluated the following p2p communication media based on the aforementioned common criteria: Wifi Adhoc, Wifi Direct, Wifi Aware, Bluetooth BDR, Bluetooth Low Energy.
-The legacy Wi-Fi Ad-Hoc mode was the original framework designed for direct peer-to-peer wireless communication. However, it suffered from several notable architectural shortcomings, including a lack of modern Quality of Service (QoS), inefficient power management, a lack of robust security mechanisms, and the requirement for devices to manually decide whether to act as the access point or a client. 
-In the Wi-Fi Ad-Hoc mode, idle smartphones suffer a massive battery drain due to a lack of distributed power saving mode~\cite{Friedman2013}. However, actively communicating smartphones had the same power cost as using a standard access point, and comparing to Bluetooth, Wi-Fi Ad-Hoc still has a vastly superior throughput rate, which is optimal for larger file transfers. In our context it is still not as useful due to \textbf{C3}: the transfer size is minimal, and we optimize for efficient battery usage through \textbf{C2}. Wi-Fi Ad-Hoc was eventually replaced by \textbf{Wi-Fi Direct}, which modernized peer-to-peer connectivity by adding better security, structured QoS, and an autonomous negotiation protocol that allows connecting devices to automatically determine which one takes over the role of the access point. However, a significant limitation of Wi-Fi Direct on modern mobile platforms is that it does not support device discovery in the background if the utilizing application is stopped or not actively running in the foreground.  \textbf{Wi-Fi Aware} (also known as \textbf{Neighbor Awareness Networking / NAN}) overcomes this background limitation by utilizing a highly power-efficient \emph{``discover-before-connect''} paradigm. Unlike Wi-Fi Direct, Wi-Fi Aware allows devices to automatically organize into synchronized local clusters and use a publish-and-subscribe mechanism to discover nearby services and exchange lightweight messages in the background, all without establishing a formal network connection. Because it operates without maintaining an active connection state, it has a significantly lower power and memory footprint. If devices need to share large amounts of data, they can seamlessly upgrade their discovery session into a fully bi-directional, high-throughput network connection.
-Positioning itself as the most appropriate for our use-case, Wi-Fi Aware has been a very possible candidate; however support for it on iOS was only recently introduced, and thus it was deemed not widely supported enough.
+The Wi-Fi Ad-Hoc mode was the first design to adapt the WLAN standard to direct peer-to-peer wireless communication.
+However, it suffered from several notable architectural shortcomings, including inefficient power management, a lack of robust security mechanisms, and the requirement for devices to manually decide whether to act as the access point or a client~\cite{2012IEEE80211}.
+In the Wi-Fi Ad-Hoc mode, idle smartphones suffer from battery drain due to a lack of distributed power saving mode~\cite{Friedman2013}. However, actively communicating smartphones had the same power cost as using a standard access point, and comparing to Bluetooth, Wi-Fi Ad-Hoc still has a vastly superior throughput rate, which is optimal for larger file transfers.
+In our context it is still not as useful due to \textbf{C3}: the transfer size is minimal, and we optimize for efficient battery usage through \textbf{C2}.
+Wi-Fi Ad-Hoc was eventually replaced by Wi-Fi Direct, which modernized peer-to-peer connectivity by adding better security and an autonomous negotiation protocol that allows connecting devices to automatically determine which one takes over the role of the access point.
+However, Wi-Fi Direct has two main limitations: it does not support device discovery in the background if the utilizing application is stopped or not actively running in the foreground; another significant constraint of Wi-Fi Direct on modern mobile platforms is that it is not supported by iOS devices, as Apple developed a competing standard, AirDrop~\cite{airdrop}.
+The Android equivalent of AirDrop, QuickShare, is developed cooperatively by Samsung and Google, and since November 2025 supports platform interoperability between Android and iOS, and has had support transfers between Androids, Windows computers, and Chromebooks before.
+While similarly providing superior data rates, QuickShare, as it uses a combination of Wi-Fi Direct and Bluetooth, is still not usable for this work, as its core lies with Wi-Fi Direct, which requires more power and devices to have the using app constantly foregrounded.
+Wi-Fi Aware (also known as Neighbor Awareness Networking / NAN) overcomes the background limitation of Wi-Fi Direct by utilizing a highly power-efficient \textit{discover-before-connect} paradigm.
+Unlike Wi-Fi Direct, Wi-Fi Aware allows devices to automatically organize into synchronized local clusters and use a publish-and-subscribe mechanism to discover nearby services and exchange lightweight messages in the background, all without establishing a formal network connection.
+Because it operates without maintaining an active connection state, it has a significantly lower power and memory footprint.
+If devices need to share large amounts of data, they can seamlessly upgrade their discovery session into a fully bi-directional, high-throughput network connection.
+Positioning itself as the most appropriate for our use-case, Wi-Fi Aware seems like a promising candidate; however, it was primarly intended for IoT devices~\cite{Saloni2016}, support for it on iOS was only recently introduced~\cite{WWDC25}, and thus it was deemed not widely supported enough.
+Early research into ad hoc and delay-tolerant networks frequently relied on legacy 802.11b and 802.11g standards, which were highly capable for active data transfers but suffered from severe battery drain when devices were left idle~\cite{Ott2006}.
+In later standard, 802.11n has introduced a significantly higher throughput and a 17\% improvement in energy efficiency over previous standards~\cite{Friedman2013}.
+
+\subsection{Alternatives}
+With Wi-Fi standards being exhaused for picking the base communication protocol, we evaluated other protocols such as Zigbee and LoRA, but very quickly forsaken due to lacking support for direct communication between mobile phones: Zigbee, LoRA, and 6LowPAN are all intended for small IoT devices to communicate among themselves or with centralized servers~\cite{Saloni2016}.
+
+\subsection{Bluetooth}
+A technology that is ubiquotous to all smartphones that have been released in the last 10 years is Bluetooth. Being standardized as Bluetooth 1.0 in 1999 by the Bluetooth Special Interest Group (SIG), Bluetooth was introduced to mobile phones by Ericsson in 2001 with the release of the T36, which allowed phones to replace bulky cables transfers with a wireless connection.
+Since then, Bluetooth has seen four major version bumps:
+\begin{itemize}
+    \item Bluetooth 2.0 offered in comparison to Wi-Fi a much lower energy consumption for transferring large files, and higher resilience to signal interference from nearby transmissions.
+    \item Bluetooth 3.0 was introduced as an upgraded specification designed to improve upon the throughput limitations of Bluetooth 2.x, doubling both send/receive throughput speeds to almost 200 KB/s, while the increasing the overall power consumption~\cite{Friedman2013}.
+    \item Bluetooth 4.0 represented an elementary shift in Bluetooth technology, with the focus shifting to optimizing for ultra-low power consumption: Bluetooth Low Energy, or BLE, was introduced in this version. BLE presents until today the backbone for most modern smartphone p2p applications, due to major power-saving capabilities: because BLE supports background advertising and discovery without requiring apps to be actively foregrounded, BLE is the primary transport mechanism for decentralized networks and emergency systems like firechat, Briar, Corona-Warn-App, Twimight, BitChat, and more~\cite{firechat,briar,CoronaWarnApp,bitchat}.
+\end{itemize}
+We thus decided to focus on BLE. In BLE, there is a dual-role split: advertising, which is carried out by the peripheral device, and scanning, which is done by the central device.
+The central device controls the connection, while the peripheral provides the service. Advertising happens on a set window, in which the peripheral sends out advertisements on an interval, in which its unique identifier is published, as well as any services it supports. The BLE advertised services stem from the underlying General Attribute Protocol, or GATT. GATT services group a set of characteristics, each identified by a UUID and different read/write permissions; the data-flow between the peripheral and the central is bidirectional, with the peripheral being able to notify the central of any changes to a characteristic value as it changes, or the central can request to read the current value of a characteristic. A full guide to BLE actions can be found on PunchThrough~\cite{BLE-guide}.
+To see the peripheral's advertisements, the central device also has to scan during the same time: the scanning is also limited to a window, during which the central listens to all incoming advertisements from surrounding devices. To discover GATT services, a device first must perform a connection, which eventually includes pairing - depending on the permissions the GATT server defined.
 
 \newcommand{\pmark}{$\sim$}    % partial / conditional
 
 \begin{table}[htbp]
     \centering
-    \caption{Evaluation of peer-to-peer communication technologies against the selection criteria.}
+    \caption{Evaluation of p2p communication technologies against the selection criteria.}
     \label{tab:p2p-criteria}
     \begin{tabular}{@{}l*{5}{P{1.6cm}}@{}}
         \toprule
@@ -54,7 +82,7 @@ Flooding, Spray-and-Pray, PRoPHET
 
 \section{Decentralized Social Networks}
 \label{sec:dsn}
-Bluesky, Mastodon, Briar, Nostr, SBB, Bitchat
+Bluesky, Mastodon, Briar, Nostr, SBB (Manyverse), Bitchat
 
 \section{Grassroots Social Networks}
 \label{sec:gsn}

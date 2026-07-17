@@ -31,7 +31,7 @@ Most notably, the rise of unstructured p2p messaging platforms like Firechat~\ci
 
 After exploring the different types of p2p overlay networks, we discuss the choice of the communication protocol, which dictates the limited physical device communication radius.
 We chose to focus on a stable protocol that most modern devices support and the populace is most likely to use in disaster zones: Bluetooth, and more specifically Bluetooth Low Energy (BLE)~\cite{bt-spec}.
-We decided to focus on Bluetooth Low Energy (BLE) as it is more power efficient, over classic Basic Rate/Enhanced Data Rate (BR/EDR), as BLE conserves device battery life, it allows users to communicate over short ranges over a longer period of time than comparable communication protocols e.g. WiFi Direct~\cite{wifi-ble-power}, %which is critical to save lives.
+We decided to focus on Bluetooth Low Energy (BLE) as it is more power efficient, over classic Basic Rate/Enhanced Data Rate (BR/EDR), as BLE conserves device battery life, it allows users to communicate over short ranges over a longer period of time than comparable communication protocols e.g. WiFi Direct~\cite{Friedman2013}.
 
 Next, we discuss the bottleneck of unstructured p2p networks: the communication algorithm.
 Most unstructured p2p networks rely on gossip protocols to disseminate information across the network, which reduces its performance and poses a threat to resilience (cite guided research paper?).
@@ -49,7 +49,7 @@ Finally, we discuss resilience, which in our context refers to network survivabi
 
 This paper proposes a system architecture for resilient unstructured p2p networks, based on a wireless dual communication stack that leverages both a short-range city-scale relation as well as as Internet-scale relation, when available, to facilitate effective communication.
 For this, in section~\ref{chap:sota}, we present the p2p communication protocols we used: BLE and UDX~\ref{sec:p2p-protocols}, as well as related works which lay at the foundation of this research paper: Peer-to-Peer Opportunistic Networking~\ref{sec:oppnet}, Routing in Opportunistic Networking~\ref{sec:opp-routing}, Decentralized Social Networks (DSNs)~\ref{sec:dsn}, and finally, Grassroots Social Networks, and what sets them apart from DSNs~\ref{sec:gsn}. Finally, the State-of-the-Art chapter positions this research work contrastingly.
-% consensus algorithms for unstructured peer-to-peer networks, provide insights about their performance characteristics, and lay out their foundational equations.
+
 To formalize the setting, goals, and environment for this research paper, section~\ref{chap:problem} will introduce our basic environment assumptions, an analysis of the concrete problem at hand, and the design goals of the system.
 Elaborating on the approach introduced in chapter~\ref{chap:problem}, section~\ref{chap:architecture} introduces the system architecture designed to support a permissionless, unstructured p2p social network, emphasizing the base algorithms, system components, and different communication layers.
 The~\ref{chap:testbed} section introduces the testbed we used to evaluate the performance of the system architecture introduced in~\ref{chap:architecture}.
