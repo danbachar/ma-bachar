@@ -3,8 +3,8 @@
 
 The State-of-the-Art section presents the papers that lay at the foundation at this research work, and positions it adverseraly. The sections in this chapter range will provide an overview over the communication mediums that we considered for this work: Bluetooth Classic, Bluetooth Low Energy, Bluetooth Mesh, Wi-Fi ad-hoc and Direct, and others. Next, this section continues with elaborating the networking assumptions that make this work possible, primarily discussing the difference between traditional packet-switching and the Store-Carry-Forward paradigm, that enables Delay-Tolerant Networking, while also presenting similar systems that have been developed using this paradigm. Followingly, we present main approaches that enable packet propagation in Delay Tolerant Networks (DTNs), explain each one of them, and show which one we used. Then, we present leading Decentralized Social Networks, and discuss whether they could have been used in our scenarios, showing that they actually cannot, and finally present the pinnacle: Grassroots Social Networks. Grassroots Social Networks lay at the core of this research work, and the networking layer presented here is a core work that lays at its foundation.
 
-\section{Peer-to-peer Communication Technologies}
-\label{sec:p2p-protocols}
+\section{Proximate Peer-to-peer Communication Technologies}
+\label{sec:proximate-p2p-protocols}
 To create the peer-to-peer communication platform, different technologies were evaluated based on the following criteria:
 \begin{itemize}
     \item \textbf{C1} Spread of the protocol: As a user-facing tool, the communication medium had to be present in virtually all smartphones used today; thus, technologies that are supported by a handful of flagship smartphones, while being an interesting point for future work, are out of the question for this work.
@@ -12,6 +12,7 @@ To create the peer-to-peer communication platform, different technologies were e
     \item \textbf{C3} Target: the communication protocol should be able to carry text messages efficiently, so a text message should be received within a short time in close range (e.g. 200KB in 1 second). 
     \item \textbf{C4} Mobility: protocols neede to support a high node mobility stemming from the mobility patterns of the users
     \item \textbf{C5} Infrastructure: there can be no external infrastructure necessary for the normal operation of the technology
+    \item \textbf{C6} The protocol should be operational even when the app is backgrounded
 \end{itemize}
 \subsection{Wi-Fi}
 To relay information directly between peer smartphones, the omnipresent Wi-Fi protocol was first investigated. Propelled by the Wi-Fi Alliance, WLAN is the wireless 802.11 protocol which enables most of the world's computers to communicate. Together with cellular-based mobile networks like 5G, home and commercial routers provide wireless radio access networks for mobile devices to connect to the Internet backbone through a multitude of devices: antennas (Radio Units), computers for signal processing (Distributed Units), base stations (Centralized Units), and more~\cite{5g}.
@@ -44,10 +45,21 @@ Since then, Bluetooth has seen four major version bumps:
     \item Bluetooth 3.0 was introduced as an upgraded specification designed to improve upon the throughput limitations of Bluetooth 2.x, doubling both send/receive throughput speeds to almost 200 KB/s, while the increasing the overall power consumption~\cite{Friedman2013}.
     \item Bluetooth 4.0 represented an elementary shift in Bluetooth technology, with the focus shifting to optimizing for ultra-low power consumption: Bluetooth Low Energy, or BLE, was introduced in this version. BLE presents until today the backbone for most modern smartphone p2p applications, due to major power-saving capabilities: because BLE supports background advertising and discovery without requiring apps to be actively foregrounded, BLE is the primary transport mechanism for decentralized networks and emergency systems like firechat, Briar, Corona-Warn-App, Twimight, BitChat, and more~\cite{firechat,briar,CoronaWarnApp,bitchat}.
 \end{itemize}
-We thus decided to focus on BLE. In BLE, there is a dual-role split: advertising, which is carried out by the peripheral device, and scanning, which is done by the central device.
-The central device controls the connection, while the peripheral provides the service. Advertising happens on a set window, in which the peripheral sends out advertisements on an interval, in which its unique identifier is published, as well as any services it supports. The BLE advertised services stem from the underlying General Attribute Protocol, or GATT. GATT services group a set of characteristics, each identified by a UUID and different read/write permissions; the data-flow between the peripheral and the central is bidirectional, with the peripheral being able to notify the central of any changes to a characteristic value as it changes, or the central can request to read the current value of a characteristic. A full guide to BLE actions can be found on PunchThrough~\cite{BLE-guide}.
-To see the peripheral's advertisements, the central device also has to scan during the same time: the scanning is also limited to a window, during which the central listens to all incoming advertisements from surrounding devices. To discover GATT services, a device first must perform a connection, which eventually includes pairing - depending on the permissions the GATT server defined.
 
+BLE is characterized by a dual-role split: advertising, which is carried out by the peripheral device, and scanning, which is done by the central device.
+The central device controls the connection, while the peripheral provides the service.
+Advertising happens on a set window, in which the peripheral sends out advertisements on an interval.
+The advertisements contain a customizable device unique identifier, as well as custom manufacturer-specific data.
+The BLE advertised services stem from the underlying General Attribute Protocol, or GATT.
+The GATT protocol is a hierarchial protocol, where the highest level is GAP: General Attribute Profile. A GAP groups GATT services together, to offer a specific function, e.g. a heart rate monitor, or a grassroots networking profile.
+Furthermore, GATT services group a set of characteristics, which are used for interfacing with data, and controlling settings pertaining to the service.
+Each of the characteristic is identified by a UUID, a value, and has different read/write permissions; the data-flow between the peripheral and the central is bidirectional, with the peripheral being able to notify the central of any changes to a characteristic value as it changes, or central can request to read the current value of a characteristic, and more~\cite{BLE-guide}.
+To see the peripheral's advertisements, the central device also has to scan during the same time: the scanning is also limited to a window, during which the central listens to all incoming advertisements from surrounding devices.
+To discover GATT services, a device first must perform a connection to one such a device, which potentially includes pairing - depending on the permissions the device's GATT server defined.   
+BLE presents advantages not only in its conservative use of battery power, but also in its security, and usage model. When an app registers a GATT serveer with the BLE adapter, the mobile phone controls it natively, and the app can remain backgrounded or on standby, while the OS continues to scan and advertise for services.
+This allows for both a heightened security model due to the protocol abstraction by the operation system, as well as the grouping together of functionalities from different apps to a central native coordinator.
+Providing a throughput of about 230 kbps at a low power usage~\cite{Jacopo2017}, BLE was able to answer all out criteria C1-C5.
+Due to the aforementioned benefits of the protocol, we thus chose BLE as the application's main communication protocol.
 \newcommand{\pmark}{$\sim$}    % partial / conditional
 
 \begin{table}[htbp]
@@ -69,7 +81,32 @@ To see the peripheral's advertisements, the central device also has to scan duri
     {\footnotesize \cmark{}~fully met \quad \pmark{}~partially met \quad \xmark{}~not met}
 \end{table}
 
-Power usage of BLE vs. Direct, NAT, Hole-punching
+\section{Remote Peer-to-peer Communication Technologies}
+\label{sec:remote-p2p-protocols}
+After discussing the choice for a proximate communication protocol, this section continues with elaborating on how different protocols were evaluated to facilitate long-distance communication.
+The protocols that were evaluated in this section include UDP, TCP, HTTPS, QUIC, and UDX.
+
+\subsection{Application Protocols: HTTP, HTTPS, QUIC}
+HTTP and HTTPS are the first protocols that we evaluated, as they lie at the base of every modern web applications, and have been tried-and-tested by many applications.
+Most web servers started by using HTTP, and in a standard web application scenario with a typical client and server having continuous end-to-end connectivity it would be optimal; however to deploy it in a DTN environment where connectivity is intermittent at best, multiple auxillary systems would need to be used in order to provide hop-by-hop connectivity. As our goal is to provide connectivity with the least amount of external infrastructure, HTTP and its secure variant HTTP over TLS/TLS (HTTPS) require many subsystems that cannot be guaranteed to be freely available in our scenarios.
+Additionally, HTTPS requires having one constantly listening TCP socket, plus one live TLS connection per peer, each with crypto state. Android and iOS tend to aggresively kill backgrounded applications and sockets. Recovering the socket connections would cost a whole TCP handshake, and a TLS handshake, which would cost multiple round trips per peer.
+This shows that recovery for TCP-and-TLS-based protocols is a heavy operation that is very expernsive in terms of time-to-first-message after start.
+QUIC, the transport standardized underneath HTTP/3, was designed to overcome two structural limitations of the TCP+TLS stack: its serialized handshakes and head-of-line blocking.
+Built on top of UDP, QUIC folds the transport and cryptographic handshakes into a single exchange, establishing an encrypted connection in one round trip, and in zero round trips when resuming a previously cached session; it further multiplexes independent streams over one connection, so that a lost packet on one stream does not stall the others~\cite{Langley2017}.
+However, QUIC remains connection-oriented: it maintains per-connection state, negotiates a full TLS~1.3 handshake on every cold start, and, like TCP, must re-establish that state whenever the underlying socket is torn down.
+In a mobile setting where the operating system aggressively reclaims backgrounded sockets, this coupling of transport and cryptographic state reintroduces the very time-to-first-message penalty we sought to avoid.
+
+\subsection{Transport-level Protocols: TCP, UDP}
+The elementary transport protocols that enable QUIC and HTTPS are UDP and TCP respectively: to decouple cryptography from connection maintenance and application state, we decided to focus on the transport protocols that enable application communication.
+Providing congestion-controlled, reliable, ordered, error-checked streams, TCP, the core transport protocol behind the IP protocol stack, was the first protocol that we investigated.
+As a congestion-controlled transport protocol, TCP assumes that all transmission errors in its delivery path stem from link congestion in the network; that means, that for intermittent connectivity outages, TCP will engage in congestion-avoidance measures, which dramatically reduce the possible data rate on the link temporaily~\cite{RFC5681}.
+Moreover, increasing the number of end-to-end hops in the network connection yields rapidly deterioratating performance with the increase of hops~\cite{Ott2010}.
+Additionally, the usage of Network Address Translation (NAT) in order to assign multiple hosts to the same IPv4 address in a network makes it even more difficult to establish a p2p TCP connection without using any external proxies, as the NAT mapping is dependent on a 5-tuple: both peers IP addresses, ports, and protocol~\cite{Keidar2026}.
+Because TCP maintains a strict connection state, the connection will break entirely any element in the 5-tuple formed by the underlying network changes.
+Every time a mobile device roams, such as switching from a Wi-Fi network to cellular data, or changing its network attachment point, its IP address changes, forcing the TCP connection to be completely re-established from scratch.
+To overcome the obstacles caused by node mobility and the ensuing change in Internet addresses, we have decided to focus on the UDP protocol as we expect frequent address changes due to our mobility model.
+
+
 
 \section{Opportunistic Networking Systems}
 \label{sec:oppnet}
