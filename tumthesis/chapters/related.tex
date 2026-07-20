@@ -118,15 +118,15 @@ However, precisely because it combines so many things that UDP normally does not
 The transport we ultimately selected for remote peer-to-peer links is UDX, the reliable stream transport that underpins the Holepunch/Pears networking stack~\cite{udx}.
 UDX provides reliable, in-order, multiplexed, and congestion-controlled streams over plain UDP, much like QUIC, but with one deliberate design difference: it performs no handshake and no encryption of its own.
 As the reference implementation phrases it, UDX has ``no handshakes, no encryption, no features''~\cite{udx}, which is precisely what makes it inexpensive to (re-)establish.
-
-Because UDX is connectionless, a stream is set up by each side independently creating a stream with a locally chosen identifier and calling \texttt{connect()} with the remote stream identifier and the remote socket address; no SYN/SYN-ACK exchange takes place, and neither peer waits for an acknowledgement before it may send.
+Because UDX is connectionless, a stream is set up by each side independently creating a stream with a locally chosen identifier and calling \texttt{connect()} with the remote stream identifier and the remote socket address. Neither peer waits for an acknowledgement before it may send.
 The very first packet can therefore already carry application payload, making the transport itself effectively \emph{zero round trip}.
-
-Confidentiality and authentication are provided by a separate layer, a Noise-based secret stream running over the UDX stream~\cite{noise}.
-Crucially, this cryptographic handshake is not paid for on the direct link.
+Encryption and authentication are provided by separate layers: the Noise suite-based~\cite{noise} secure public key exchanged is performed after the application-level identity exchange happens, with session keys derived from the identity public keys through a birational map~\cite{cite-birational-map}.
+Crucially, this cryptographic handshake is not paid for directly in the transport layer, which makes it very simple to establish such a connection.
 
 \section{Opportunistic Networking Systems}
 \label{sec:oppnet}
+From the communication protocols we elaborate to research other existing opportunistic networking systems: Opportunistic Networking Systems are a subsystem of DTNs, where the emphasis lies on the opportunistic establishment of links between peers; every possible participating user is henceforth referred to as a peer in the OppNet, and the links between them can be establish opportunistically: that means a peer randomally passing another peer will try to establish a secure connection to it, in order to exchange data in a DTM style.
+
 (MANET BATMAN) vs. Twimight, Emergency Broadcast, COVID contact tracing, Wifi-Opp
 
 
