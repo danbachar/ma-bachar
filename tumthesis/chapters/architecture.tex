@@ -4,11 +4,6 @@
 A demo chat app deployed on phones, which serves as the foundation to the blocklace-based future grassroots social network: argue why exactly these functions are needed.
 \section{System Architecture}
 
-The stack is organised into four layers. The lower two (transport + protocol)
-constitute the reusable library (`lib/src/`); the coordinator sits above them as
-the public façade; the topmost layer is the consuming application (in this repo,
-a demonstrator chat app under `lib/*.dart`).
-
 \resizebox{!}{0.33\textheight}{ % Resizes height to 1/3 of the text height, aspect ratio preserved
         \begin{tikzpicture}[
             stack/.style={

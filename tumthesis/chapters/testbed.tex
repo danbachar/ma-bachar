@@ -1,89 +1,112 @@
 \chapter{Testbed}
 \label{chap:testbed}
+\section{Wireless Opportunistic Networks as a Bridge to Collective Communication}
+\subsection{Fundamentals of Collective Communication}
+Extensive algorithmic and analytical research has established a set of fundamental collective-communication operations: Broadcast, Reduce, All-Reduce, Scatter, Gather, All-Gather and All-to-All~\cite{Sanders2019}.
+These operations are used to model information flow in collective communication networks, and a generalization of those: parallel algorithms and distributed systems:\begin{itemize}
+\item \emph{Broadcast}: The Broadcast operation models a single node sending a copy of its message to all other nodes in the network.
+\item \emph{Reduce}: One message from each node is combined into a single result using an associative operator such as addition, and delivered to a single node.
+\item \emph{All-Reduce}: A combination of reduce and broadcast, where the final combined result is then broadcast to all nodes.
+\item \emph{Scatter}: The Scatter operation models a single node distributing a distinct individual message to all other nodes.
+\item \emph{Gather}: The Gather operation models all nodes uniting their message to a single, concatenated message, which then gets sent to one node.
+\item \emph{All-Gather}: A combination of Gather and Broadcast, where the final concatenated result is then broadcast to all nodes.
+\item \emph{All-to-All}: The All-to-All broadcast has every node broadcast a distinct, individual message to every other node.
+\end{itemize}
+To better understand the clash between parallel processing algorithms that require highly-regular interaction patterns with low-level communication mediums (e.g. antennas) present on standard machines, these models were standardized into a set to help research simplify complex parallel computing tasks.
+The collective communication operations are traditionally modeled and evaluated mathematically across different network topologies, including \emph{line},\emph{tree},hyper-\emph{cube} toppologies.
+While there is no shortage of analytical results and proven analytical bounds for these operations (e.g. calculating transmission costs), these research works are mostly constrainted to predicted, stable networks and synchronized parallel computing environments.
+There is a required paradigm shift in adapting these operations to OppNets, as they require mostly synchronous execution over rigid geometric topologies: the research community began mapping those operations to physical mobile devices by using asynchronous delay-tolerant mechanisms: Store-Carry-Forward in all-to-all broadcast epidemic routing, CRDTs for global state synchronization instead of consensus, and federated learning for an all-reduce computation~\cite{Shapiro2023,Maheo2023,TranTruong2026}.
+This testbed evaluates how effectively we can map these collective operations onto the physical world, using an 8-device mesh, simulating different network topologies and movement models.
 To evaluate the system architecture, we deployed it as a mobile application on a limited testbed of Android and iOS devices. During the deployment, usage statistics were recorded and uploaded to a secure TUM server on an opt-in basis.
+To test different aspects of our system, we picked three topologies to conduct tests on:
+\begin{itemize}
+    \item \emph{Line}: In this test, three nodes were placed on a line at equal intervals, and were allowed to connect with only the previous and next nodes, save for the first and last nodes: they were allowed to connect with the next and previous nodes, respectively. This model tests the decode-and-relay forwarding technique~\cite{cooperative-commnunication-networking}, measures how much battery power is saved when a device transmits to its immediate neighbor vs. a far away peer, and how long a message spends at every hop before getting forwarded (hop-to-hop latency).
+    \item \emph{Ring}: In this test, five nodes were scattered in two clusters: two phones next to each other, two phones far enough away to not receive interference from them, and a phone in the middle. The phone between the two clusters joins each cluster for a limited time, allowing messages to propagate between the clusters. This topology similarly tests the decode-and-relay forwarding, and evaluates how well the system handles intermittent, connectionless data exchanges over time, by comparing the link establishment time against the middle node's mobility pattern, how long every message spends at every hop (hop-to-hop latency), and how the size of the message and DTN message buffer at every node affects congestion.
+    \item \emph{Hypercube}: In this test, all eight nodes were scattered in a cube-like structure, and were limited in how links were allowed to be established (neighbor whitelist). This test evaluates the `all-to-all` dissemination method in a highly efficient manner, as the hypercube evaluates all-to-all communication in exactly $\log_2(8) = 3$ rounds. This test compares the baseline line experiment a mesh, to evaluate the cost of having more links, and more messages to transfer.
+\end{itemize}
 
-\section{CS1 --- Multi-hop reach: latency \& delivery vs hop count}
+% \section{CS1 --- Multi-hop reach: latency \& delivery vs hop count}
 
-\paragraph{Question.} Does the mesh actually extend range beyond one radio hop, and at
-what latency cost?
+% \paragraph{Question.} Does the mesh actually extend range beyond one radio hop, and at
+% what latency cost?
 
-\paragraph{Setup.} Line topology A--B--C--D--E (allowlist or separation) $\to$ 1--4 hops.
+% \paragraph{Setup.} Line topology A--B--C--D--E (allowlist or separation) $\to$ 1--4 hops.
 
-\paragraph{Procedure.} Fixed-size messages A$\to$B, A$\to$C, A$\to$D, A$\to$E; many repetitions; repeat
-with an unfragmented ($\leq$442\,B) and a fragmented (multi-packet) payload.
+% \paragraph{Procedure.} Fixed-size messages A$\to$B, A$\to$C, A$\to$D, A$\to$E; many repetitions; repeat
+% with an unfragmented ($\leq$442\,B) and a fragmented (multi-packet) payload.
 
-\paragraph{Measures.} \texttt{message dir=recv} (\texttt{relayHops}, \texttt{deliveryMethod}),
-\texttt{dir=delivered} (\texttt{e2eLatencyMs}), \texttt{dir=ack\_timeout} (failures).
+% \paragraph{Measures.} \texttt{message dir=recv} (\texttt{relayHops}, \texttt{deliveryMethod}),
+% \texttt{dir=delivered} (\texttt{e2eLatencyMs}), \texttt{dir=ack\_timeout} (failures).
 
-\paragraph{Output.} Latency CDF per hop count; delivery ratio per hop count;
-fragmentation penalty as a second series.
+% \paragraph{Output.} Latency CDF per hop count; delivery ratio per hop count;
+% fragmentation penalty as a second series.
 
-\section{CS3 --- The cost of managed flooding: total mesh effort}
+% \section{CS3 --- The cost of managed flooding: total mesh effort}
 
-\paragraph{Question.} How many on-air transmissions does one delivered message cost,
-and how effective are the flood controls?
+% \paragraph{Question.} How many on-air transmissions does one delivered message cost,
+% and how effective are the flood controls?
 
-\paragraph{Setup.} Same message workload run under three topologies: full mesh, line,
-star.
+% \paragraph{Setup.} Same message workload run under three topologies: full mesh, line,
+% star.
 
-\paragraph{Procedure.} Join \texttt{relay} records across devices on \texttt{packetId} (equals
-\texttt{messageId} for single-packet messages).
+% \paragraph{Procedure.} Join \texttt{relay} records across devices on \texttt{packetId} (equals
+% \texttt{messageId} for single-packet messages).
 
-\paragraph{Measures.} Total effort = origin \texttt{sent.fanout} + $\Sigma$ \texttt{relay action=relayed fanout}; redundancy absorbed = \texttt{suppressed\_dup} (relay side) + \texttt{message dir=dup} (recipient side); flood-control hits = \texttt{suppressed\_ttl} /
-\texttt{suppressed\_budget}.
+% \paragraph{Measures.} Total effort = origin \texttt{sent.fanout} + $\Sigma$ \texttt{relay action=relayed fanout}; redundancy absorbed = \texttt{suppressed\_dup} (relay side) + \texttt{message dir=dup} (recipient side); flood-control hits = \texttt{suppressed\_ttl} /
+% \texttt{suppressed\_budget}.
 
-\paragraph{Output.} Transmissions-per-delivery vs node degree; suppression breakdown;
-relay load per node (the middle-node burden in the line).
+% \paragraph{Output.} Transmissions-per-delivery vs node degree; suppression breakdown;
+% relay load per node (the middle-node burden in the line).
 
-\section{CS4 --- Battery: the price of relaying for strangers}
+% \section{CS4 --- Battery: the price of relaying for strangers}
 
-\paragraph{Question.} What does open relaying cost a node that neither sends nor
-receives?
+% \paragraph{Question.} What does open relaying cost a node that neither sends nor
+% receives?
 
-\paragraph{Setup.} Line topology; B--D relay everything, A/E are endpoints. Baselines:
-app idle (no traffic), app off.
+% \paragraph{Setup.} Line topology; B--D relay everything, A/E are endpoints. Baselines:
+% app idle (no traffic), app off.
 
-\paragraph{Procedure.} Fixed message rate for several hours per role; rotate roles
-across devices to cancel battery-health differences.
+% \paragraph{Procedure.} Fixed message rate for several hours per role; rotate roles
+% across devices to cancel battery-health differences.
 
-\paragraph{Measures.} \texttt{device} samples (\texttt{batteryDrainPctPerHr}), \texttt{relay} records for
-per-node relay counts (correlate drain with effort).
+% \paragraph{Measures.} \texttt{device} samples (\texttt{batteryDrainPctPerHr}), \texttt{relay} records for
+% per-node relay counts (correlate drain with effort).
 
-\paragraph{Output.} Drain rate per role (source / relay / sink / idle); drain vs
-relayed-packets-per-hour.
+% \paragraph{Output.} Drain rate per role (source / relay / sink / idle); drain vs
+% relayed-packets-per-hour.
 
-\section{CS8 --- Churn \& real mobility: the field day}
+% \section{CS8 --- Churn \& real mobility: the field day}
 
-\paragraph{Question.} Does it all hold up under real human movement?
+% \paragraph{Question.} Does it all hold up under real human movement?
 
-\paragraph{Setup.} 5 participants, one office/campus floor, $\sim$6\,h. Zones with known
-radio relationships (pre-tested): Z1 office, Z2 lab (marginal reach to Z1),
-Z3 cafeteria (isolated).
+% \paragraph{Setup.} 5 participants, one office/campus floor, $\sim$6\,h. Zones with known
+% radio relationships (pre-tested): Z1 office, Z2 lab (marginal reach to Z1),
+% Z3 cafeteria (isolated).
 
-\paragraph{Procedure.} 15-min slot schedule per participant; workload driver runs the
-seeded-Poisson load throughout; traces auto-upload every 10 min.
+% \paragraph{Procedure.} 15-min slot schedule per participant; workload driver runs the
+% seeded-Poisson load throughout; traces auto-upload every 10 min.
 
-\begin{table}[h]
-\centering
-\begin{tabular}{@{}lcccccl@{}}
-\toprule
-Window & A & B & C & D & E & Produces \\
-\midrule
-09--10 & Z1 & Z1 & Z1 & Z1 & Z1 & full-mesh baseline \\
-10--11 & Z1 & Z1 & Z2 & Z2 & Z3 & stable partition; E isolated \\
-11--12 & Z1 & walker & Z2 & Z2 & Z3 & B mules Z1$\leftrightarrow$Z2 (10-min cycle) \\
-12--13 & Z3 & Z3 & Z3 & Z1 & Z1 & partition flip $\to$ DTN flush \\
-13--15 & \multicolumn{5}{c}{free movement} & natural churn \\
-\bottomrule
-\end{tabular}
-\caption{CS8 slot schedule per participant across the field day.}
-\label{tab:cs8-schedule}
-\end{table}
+% \begin{table}[h]
+% \centering
+% \begin{tabular}{@{}lcccccl@{}}
+% \toprule
+% Window & A & B & C & D & E & Produces \\
+% \midrule
+% 09--10 & Z1 & Z1 & Z1 & Z1 & Z1 & full-mesh baseline \\
+% 10--11 & Z1 & Z1 & Z2 & Z2 & Z3 & stable partition; E isolated \\
+% 11--12 & Z1 & walker & Z2 & Z2 & Z3 & B mules Z1$\leftrightarrow$Z2 (10-min cycle) \\
+% 12--13 & Z3 & Z3 & Z3 & Z1 & Z1 & partition flip $\to$ DTN flush \\
+% 13--15 & \multicolumn{5}{c}{free movement} & natural churn \\
+% \bottomrule
+% \end{tabular}
+% \caption{CS8 slot schedule per participant across the field day.}
+% \label{tab:cs8-schedule}
+% \end{table}
 
-\paragraph{Measures.} Everything: \texttt{message}, \texttt{relay}, \texttt{contact}, \texttt{density}, \texttt{buffer},
-\texttt{device}.
+% \paragraph{Measures.} Everything: \texttt{message}, \texttt{relay}, \texttt{contact}, \texttt{density}, \texttt{buffer},
+% \texttt{device}.
 
-\paragraph{Output.} Delivery-delay CDF split by direct/relayed/DTN; inter-contact CDF
-vs planned schedule; delivery ratio per window. \textbf{Headline criterion:} every
-message offered during the partition windows is delivered after the 12:00
-flip.
+% \paragraph{Output.} Delivery-delay CDF split by direct/relayed/DTN; inter-contact CDF
+% vs planned schedule; delivery ratio per window. \textbf{Headline criterion:} every
+% message offered during the partition windows is delivered after the 12:00
+% flip.
