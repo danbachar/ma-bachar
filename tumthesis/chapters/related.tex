@@ -125,6 +125,7 @@ Crucially, this cryptographic handshake is not paid for directly in the transpor
 
 \section{Opportunistic Networking Systems}
 \label{sec:oppnet}
+\subsection{Background}
 From the communication protocols we elaborate to research other existing opportunistic networking systems.
 MANETs, who predate OppNets, seemed promising to enable ad-hoc communcication between mobile devices, requiring devices to forward messages for others in addition to allowing the devices themselves to communicate.
 Talk about different routing strategies in MANETs?
@@ -135,6 +136,24 @@ In MANET systems there has to be a fully-connected end-to-end path before a mess
 OppNets are an instance of the Store-Carry-Forward paradigm, where the obstacle that prevents MANETs from being used, is used as an advantage - node mobility. In Pocket-Switched Networks, an alias to OppNets, peers frequently change their network attachment point due to physical movements, as precisely due to the reason alluded to by their name -- the participating devices sit in the users' pockets: their smartphones. In those networks, peers carry messages with them as they move until the opportunity arises to forward the message to another peer~\cite{Boldrini2014}.
 In OppNets, the emphasis lies on the opportunistic establishment of links between peers. Every possible participating user is henceforth referred to as a peer in the OppNet, and the links between them establish opportunistically: that means a peer randomally passing another peer will try to establish a (secure) connection to it.
 Because OppNets rely on the physical mobility patterns of humans to establish bridges between disconnected clusters (either due to network partitions, physical distance, or lacking infrastructure), OppNets excel in decentralization of communication in areas with intermittent connectivity, such as disaster zones, remote areas, or regions that suffer from state control of the communication infrastructure~\cite{Strobel2024,Alsulami2022,Pozza2015}. The usage of mobility models to propagate information in a network is especially useful to establish information flows in regions that lack communication infrastructure, such as war zones, and disaster-struck areas.
+
+\subsection{Routing in MANETs and OppNets}
+\label{sec:opp-routing}
+In MANETs, routing algorithms assume that the network topology formed is a single connected component, where all nodes can be reached, and strive to establish and maintain an efficient end-to-end path between source and destination by using control packets to evaluate the route~\cite{Ott2010,Almeida2012}.
+MANET routing algorithms are usually categorized to either on-demand reactive algorithms, or proactive algorithms where nodes frequently send messages to their neighbors to evaluate their link quality.
+The most common MANET routing algorithms are listed below:\begin{itemize}
+\item \emph{AODV}: the Ad-hoc On-Demand Distance Vector algirithm is a \emph{reactive} protocol that discovers routes upon request of a node to send a message to a peer. It floods a Route Request message (RREQ) across the network: every node that forwards the RREQ add who they received it from, in order to record a reverse path. When the destination receives the first RREQ, it sends a Route Response (RREP) along the reverse path, and nodes that forward it back create an entry in their routing table, so that future requests could follow that path. To maintain the route, nodes that detect failures send back a Route Error (RERR) message, triggering another RREQ sequence~\cite{cmb-mobile-networks-2a}.
+\item \emph{OLSR}: the Optimized Link State Routing algorithm is a \emph{proactive} protocol where all nodes create and maintain routing tables according to their own link quality, and focuses on evaluating the closest neighborhood for every node, making use of the notion that not every node needs to flood everything to everyone to build efficient routing tables. OLSR uses a Multipoint Relay (MPR) set of neighboring nodes that are well-connected to every two-hop neighbor, in order to form an efficient flooding backbone across the entire network.
+\item \emph{Geographic}: use GPS location to restrict flooding done by routing protocols, for example by using building geolocation information and solving the routing problem for buildings~\cite{Liu2026}.
+\end{itemize}
+On the other hand, OppNet routing does not make the same assumptions: in OppNet routing, there is no end-to-end path that exists. Whether due to sparse connectivity graphs, intermittent network outages, or high node mobility, there is no instantenous end-to-path that connects all nodes, and the graph is comprised out of multiple components. Instead of dropping a packet when a path is not available to it, OppNet routing algorithms store those packets at a relaying node, the node carries it and forwards it opportunistically when encountering new peers.
+There exist a plethora of OppNet routing algorithms, and we will cover the three most famous ones:\begin{itemize}
+    \item \emph{Epidemic}: A flooding approach where a node floods copies of its messages to every other node it encounters. Achieving high delivery rates by spreading data like an epidemic disease, it is highly prone to congestion due to the massive amount of bandwidth and buffer space needed for an all-to-all broadcast~\cite{Ott2006,Almeida2012}.
+    \item \emph{Spray-and-Wait}: This algorithm limits the number of copies of messages created, by creating a constant amount of copies for every message at an originator. In the first phase of the algorithm, the originator `sprays` copies upon encountering other peers: in every encounter, the originator hands over a half of all the copies it has to every peer, until exactly one copy remains, which shall be only forwarded directly to the destination. The relaying nodes continue with the same methodology, until the final node is reached.
+    \item \emph{PRoPHET} (Probabilistic Routing Protocol using History of Encounters and Transitivity): The PRoPHET protocol used stochastics
+\end{itemize}
+Epidemic, Spray-and-Pray, PRoPHET
+
 Early examples of OppNets have leveraged the notion of Store-Carry-Forward to offer intermittent connectivity without central communication infrastructures~\cite{Juang2002}, providing wide-scale wildlife tracking during mass migrations~\cite{Pozza2015}, as well as voicemail and email services to rural areas in developing countries~\cite{Lindgren2007,Pentland2004}.
 On smartphones, one of the most famous and large-scale deployments was Firechat~\cite{firechat}, which was broadly used in the 2014 Hong Kong protests, and later in Iran and Iraq.
 Firechat allowed users to use either direct p2p communication, broadcast a message to all mesh participants, or use IRC-style chatrooms based on proximity. Using Firechat, tens-of-thousands of protestors were able to organize and coordinate supplies for the dissidents during the protests, during a time of Internet blackout scare by the government, as protestors chanted for democracy in the Occupy Central protests.
@@ -147,11 +166,6 @@ Building upon years of experience as the CEO of Twitter, Jack Dorsey, together w
 To efficiently flood messages across the local mesh without overwhelming the network, BitChat implements an epidemic-like routing protocol, which widely distributes data while using node-specific Bloom filters to quickly identify and reject duplicate packets.
 Furthermore, by natively integrating robust end-to-end encryption and mutual authentication via the Noise Protocol Framework and Noise key exchange, BitChat solves the glaring privacy vulnerabilities that plagued earlier mesh apps.
 This advanced, censorship-resistant architecture has already seen significant real-world adoption, proving vital for coordination during large-scale protests in Nepal and state-ordered internet blackouts in Iran and Uganda.
-
-
-\section{Routing in Opportunistic Networks}
-\label{sec:opp-routing}
-Flooding, Spray-and-Pray, PRoPHET
 
 \section{Decentralized Social Networks}
 \label{sec:dsn}
