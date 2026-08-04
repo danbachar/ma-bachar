@@ -21,7 +21,7 @@
 \usepackage{listings}
 \usepackage{lstautogobble}
 \usepackage{tikz}
-\usetikzlibrary{calc}
+\usetikzlibrary{calc,arrows.meta}
 \usepackage{pgfplots}
 \usepackage{pgfplotstable}
 \usepackage{booktabs} % for better looking table creations, but bad with vertical lines by design (package creator despises vertical lines)
@@ -39,7 +39,10 @@
 \usepackage{pdfpages} % for including multiple pages of pdfs
 \usepackage{adjustbox} % can center content wider than the \textwidth
 \usepackage{tablefootnote} % for footnotes in tables as \tablefootnote
-\usepackage{threeparttable} % another way to add footnotes as \tablenotes with \item [x] <your footnote> after setting \tnote{x} 
+\usepackage{threeparttable} % another way to add footnotes as \tablenotes with \item [x] <your footnote> after setting \tnote{x}
+\usepackage{longtable} % for tables spanning multiple pages (used by the GLP Networking API appendix)
+\usepackage{colortbl} % for \rowcolor (used by the GLP Networking API appendix)
+\usepackage{amsmath} % for aligned and other math environments
 
 
 % https://tex.stackexchange.com/questions/42619/x-mark-to-match-checkmark

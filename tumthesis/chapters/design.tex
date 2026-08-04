@@ -4,12 +4,81 @@ In this chapter, we lay out the foundations of the problem at hand, and how did 
 \section{Environment Assumptions}
 \label{sec:ass}
 The operating environment for GSN is versatile: from disaster-struck warzones that lack physical access to the Internet because its operating infrastructure was damaged, to politically oppresive regimes that use various Internet monitoring and controling techniques to oppress and cull resistance to them, providing secure communications in times of political unrest, and providing an end-to-end secure messaging platform for privacy-aware individuals.
-Due to the various possible settings in which it can be used, the system was designed with letting the user choice of the right security settings for them, as provides a tradeoff between usability and security and privacy, while the default settings for all features are set to the most-cautious, unless chosen otherwise.
+GSN is designed to run in an absolute absence of centralized infrastructure or dedicated servers, and thus the physical hardware substrate consists solely of smartphones. Smartphones are characterized by the humans that use them: highly mobile, roaming devices characterized by frequently changing IP addresses, constrained battery life, and limited processing power.
 The first environment that we decided to operate in is disaster zones, which usually have damaged wide-area Internet infrastructure and backhaul connectivity due to the infrastructure's delicate nature~\cite{Legendre2011,Liu2026,Hasan2025}. In those scenarios, only a small majority of nodes (e.g. those with satellite links like Starlink plates) retain access to the global Internet~\cite{Liu2026}. Due to the terrain fragmentation and partial Internet backhaul connectivity, research propose various OppNet and DTN routing strategies, most notably epidemic routing, to pass critical messages directly to one another until reaching a node that still has a connection. To maximize device life and minimize battery drain, we thus decided to focus on BLE as a main transport medium, and to develop a mesh strategy to maximize the transmission range and overall reachability, using other peers to forward messages.
 Other then disaster zones, another motivating environment is the issue of providing secure communication in politically oppressive regimes, that still have a functioning Internet infrastructure. The underlying transport layer protocol choice was shaped by this design space: TCP is heavily censored in Iran, by using stateful inspection to detect and block banned domains~\cite{Aceto2026}, while UDP is heavily restrained due to being associated with VPN traffic and the QUIC protocol, which is used by major Google platforms like Search, YouTube, and Gmail, and Meta CSNs like Facebook and Instagram. While network anomalities targeting the QUIC protocol were detecting during the January 2026 Internet outage in Iran~\cite{Aceto2026}, researchers noted that 4.4\% of global Internet users cannot use QUIC because UDP is completely blocked, however most of those users were found to be corporate network users that are behind restrictive enterprise firewalls, and no single ISP was found to completely block QUIC or UDP~\cite{Langley2017}.
+Within these settings, the system is designed to operate under the following constraints:
+\textbf{Intermittent Connectivity}: Physical connections between mobile devices are inherently unreliable, sparse, and stochastic due to human mobility, environment interference, or active network shutdowns. This implicates that disjoint communities must be capable of operating independently of any global coordination in localized networks.
+Due to the various possible settings in which it can be used, the system was designed with letting the user choice of the right security settings for them, as provides a tradeoff between usability and security and privacy, while the default settings for all features are set to the most-cautious, unless chosen otherwise.
 As mentioned in the previous chapter, we chose UDP as our underlying transport protocol for the IP Internet relation, using it to establish secure communication channels with remote peers. To establish those channels, a hole needs to be punched in each user's firewall to let data packets in from their counterpart. For that, a communication channel needs to be establish to be used as a signaling channel, to coordinate hole punching. Initially using the BLE transport to directly coordinate UDP hole-punching, GNL quickly expanded into facilitating hole-punching through existing network connections with mutual online friends (i.e. edge rendezvous points), which uses the notion of propagating trust along the user's social graph to facilitate connections for friends. Additionally, GNL also supports cloud rendezvous points, which are servers that run the rendezvous points, that any GSN user can run on a server with a static IP address and a permissive firewall policy, that allows external incoming connections. Using cloud rendezvous point allows users to reach remote friends without having any overlap in their GSN social graph or having encountered them physically, as rendezvous points allow the creation and redemption of invite links, which are essentially ephemeral, time-constrained, usage-limited expiring tokens that allow the redeemer to cold-call the link creator, letting the redeemer submit a friend request through one of the creator's rendezvous points (both edge and cloud).
 Pivoting from a traditional client-server architecture to a p2p architecture was clear from the beginning, as the p2p architecture is much more resistant to censorship and control, while the client-server architecture is also more subsceptible to distruptions.
 Finally, to mitigate online monitoring, we decided to enforce end-to-end encryption using a secure Noise handshake for an encrypted session establishment, rendering all transported text undecipherable ciphertext to an adversary that has intercepted a message.
+
+\begin{figure}[htbp]\centering
+\resizebox{!}{0.33\textheight}{%
+\begin{tikzpicture}[
+    stack/.style={
+        draw,
+        thick,
+        minimum height=1.2cm,
+        font=\sffamily\Huge,
+        inner sep=10pt,
+        align=center
+    },
+    arrow/.style={
+        ->,
+        >=stealth,
+        thick
+    }
+]
+    % Bottom layer: four access-role boxes in one row.
+    \node[stack, minimum width=3cm] (peripheral) at (0,0) {Peripheral};
+    \node[stack, minimum width=3cm, anchor=west] (central) at ($(peripheral.east)+(0.5cm,0)$) {Central};
+    \node[stack, minimum width=3cm, anchor=west] (cellular) at ($(central.east)+(0.5cm,0)$) {Cellular};
+    \node[stack, minimum width=3cm, anchor=west] (wlan) at ($(cellular.east)+(0.5cm,0)$) {WLAN};
+
+    % Transport and upper layers are exact rectangles derived from the
+    % bottom-row box edges so they align perfectly with the row widths.
+    \coordinate (bleSW) at ($(peripheral.north west)+(0,0.8cm)$);
+    \coordinate (bleNE) at ($(central.north east)+(0,2.0cm)$);
+    \coordinate (ipSW) at ($(cellular.north west)+(0,0.8cm)$);
+    \coordinate (ipNE) at ($(wlan.north east)+(0,2.0cm)$);
+    \coordinate (noiseSW) at ($(peripheral.north west)+(0,2.8cm)$);
+    \coordinate (noiseNE) at ($(wlan.north east)+(0,4.0cm)$);
+    \coordinate (gsnSW) at ($(peripheral.north west)+(0,4.8cm)$);
+    \coordinate (gsnNE) at ($(wlan.north east)+(0,6.0cm)$);
+
+    \draw[draw,thick] (bleSW) rectangle (bleNE);
+    \draw[draw,thick] (ipSW) rectangle (ipNE);
+    \draw[draw,thick] (noiseSW) rectangle (noiseNE);
+    \draw[draw,thick] (gsnSW) rectangle (gsnNE);
+
+    \node[font=\sffamily\Huge] at ($(bleSW)!0.5!(bleNE)$) {BLE};
+    \node[font=\sffamily\Huge] at ($(ipSW)!0.5!(ipNE)$) {IP};
+    \node[font=\sffamily\Huge] at ($(noiseSW)!0.5!(noiseNE)$) {Noise};
+    \node[font=\sffamily\Huge] at ($(gsnSW)!0.5!(gsnNE)$) {GSN};
+
+    % Wiring
+    \draw[arrow] (peripheral.north) -- ($(peripheral.north |- bleSW)$);
+    \draw[arrow] (central.north) -- ($(central.north |- bleSW)$);
+    \draw[arrow] (cellular.north) -- ($(cellular.north |- ipSW)$);
+    \draw[arrow] (wlan.north) -- ($(wlan.north |- ipSW)$);
+    
+    \coordinate (bleTop) at ($(bleSW)!0.5!(bleNE)$);
+    \coordinate (bleTop) at ($(bleTop |- bleNE)$);
+    \coordinate (ipTop) at ($(ipSW)!0.5!(ipNE)$);
+    \coordinate (ipTop) at ($(ipTop |- ipNE)$);
+    \coordinate (noiseTop) at ($(noiseSW)!0.5!(noiseNE)$);
+    \coordinate (noiseTop) at ($(noiseTop |- noiseNE)$);
+    \coordinate (gsnTop) at ($(gsnSW)!0.5!(gsnNE)$);
+    \coordinate (gsnTop) at ($(gsnTop |- gsnNE)$);
+    \draw[arrow] (bleTop) -- ($(bleTop |- noiseSW)$);
+    \draw[arrow] (ipTop) -- ($(ipTop |- noiseSW)$);
+    \draw[arrow] (noiseTop) -- ($(noiseTop |- gsnSW)$);
+\end{tikzpicture}%
+}
+\caption{High-level architecture}
+\end{figure}
 
 \section{Design Goals}
 \label{sec:des}
@@ -33,96 +102,110 @@ Due to being used in various security profiles affected by different usage scena
 \section{Architecture}
 \label{sec:arch}
 
-A demo chat app deployed on phones, which serves as the foundation to the blocklace-based future grassroots social network: argue why exactly these functions are needed.
+This section explains the different architectural decisions we've made to implement the networking layer, in order to provide a base communication layer for the Grassroots Social Networking project. In this section, different design goals are met with environment assumptions, and materialize in actual data structures, code components, networking interfaces, and control triggers.
+First of all, since GSN targets digital human sovereignty in the modern Internet, we had to pick an Internet-capable device that most humans possess, throughout all of our different usage environments: the smartphone. According to the International Telecommunication Union of the United Nations, mobile phones are the most common gateway to the Internet, with over four in five people worldwide owning an Internet-capable mobile phone~\cite{MobilePhoneOwnership}.
+To run GSN on a smartphone, we need to develop a mobile application: for that, multiple programming languages are available, lead by two main paradigms. The first, native application development, would require to develop two parallel versions of the same app, one for iOS written in Swift, and one for Android written in Java. The second paradigm has developers use a language which compiles to both platforms, like Flutter~\cite{flutter} or React Native~\cite{RN}, and develop polyfills on demand for hardware-specific code. 
+As different countries and populations around the world use both iOS devices and Androids, and it is easier to target both platforms while using a compiled language, we decided to use Flutter or React Native rather than developing natively for both platforms, and further decided to use Flutter, as other components of the GSN system were written in Dart~\cite{Shapiro2026GLP}.
+To test out the networking layer, we decided to build a GSN mobile app in Flutter, which would mimic the core functionalities it would offer using GLP; the API document between GLP and GNL is attached as X.X in the appendix.
+
+\subsection{Identity}
+\label{subsec:identity}
+The most basic building block of any social network, and more so a GSN, is the user identity.
+What comprises a user identity in traditional CSNs or DSNs cannot be used in GSNs, as there is no central server to validate a user's email and password credentials.
+Instead, GSN uses a static per-user cryptographic key pair, which the app generates upon first launch.
+This key pair is used to sign the user identity periodic announcements (\ref{subsec:announce}), which announce its presence to other GSN users, and used to derive its Noise session key to establish secure encrypted sessions.
+Messages are encrypted within Noise sessions, and peers that relay them using BLE cannot read any field of the message header, excluding the `recipientID` field. This field is hashed, concatenating the intended recipient's public key with a static prefix, and a time-slot suffix, so that every peer upon receiving a message can easily calculate whether it is the intended recipient and decrypt the message, or decide to forward it to other peers.
+
+\subsection{Announce}
+\label{subsec:announce}
+The Announce message is the only message which is sent in cleartext, and is a neighbor-local message (\verb|TTL=1|) whose payload carries the full public key, nickname, and the creator's signature over the packet.
+It is used to broadcast both presence and identity to nearby grassroots peers, and is not relayed over the mesh. Gated on the trust level and the friendship status~\ref{subsec:trust} of between two peers, a friend receives a more comprehensive version of the announce message than a stranger, containig also candidate IP addresses for a connection.
+Announce messages are spread over both delivery substrates, serving different purposes: over the IP transport, the announce message serves as a link healthiness probe, as using UDX sacrifices the ability to know whether a link is actually alive or stale. The transport medium does not influence the shape of the announce message, and it contains the same information.
+
+\subsection{BLE Advertising \& Scanning}
+\label{subsec:ble-adv-scan}
+As mentioned in previous chapters, the BLE transport medium is used as the chief transport substrate to send and relay messages between grassroots peers.
+To establish local connections with nearby grassroots devices, a grassroot device makes itself discoverable by registering a GATT server and advertising a BLE service UUID under it.
+The service UUID has 16 bytes, comprised out of a fixed 8-byte grassroots prefix (the first 8 bytes of \verb|SHA-256("grassroots")|: the constant \verb|84c403160871e5ad|), and a rotating 8-byte suffix comprised out of the first 8-bytes of \verb!SHA-256("grassroots ble suffix" | pubkey | slot)!, where \verb|slot| is the current wall-clock time divided by a 15-minute slot time.
+This design allows us to spare costly needless cryptographic trial-decrypt on every message, which in realistic mesh network would result in hundreds of messages per second, which would have paralyze older devices (Cryptobench on Nexus 5X). The trade-off this approach yields is that a recipient public-key is identifiable, but only for a 15-minute slot by adversaries that already have their public key. To a passive observer who does not know the public key, this is a seemingly random beacon that changes every 15 minutes, preventing tracking of a device across slots, while anyone who does know the key - a peer trusted by the owner's trust settings - can quickly compute the suffix and recognize it, quickly deciding whether the intended recipient is addressed to them, otherwise relaying the package forward.
+The cost of this design materializes in having to match an advertised service UUID against a set of the previous, current, and next derived service UUIDs (due to clock drift) for every known peer, when a user device's trust settings is set to closed, in which a peer blocks connection attempts from any unknown service UUIDs. An open trust setting allows connections from strangers.
+In order to establish a BLE connection between a device pair, one device must advertise while the other scans; only after an advertisement is seen can a connection attempt be established. Grassroots devices connecting to other grassroots devices are automatically accepted, as the advertised GATT service has the bondless connection option enabled.
+A scanner that found an advertiser's advertisement attempts to connect to it: if the connection succeeds, the scanner takes on the central role, while the advertiser becomes the peripheral. A connection becomes usable, when the reverse leg also completes: each device is both a central and a peripheral to its counterpart. This is because the performance of a central-side write is faster than a peripheral-side, and it also allows to read the RSSI of the connection.
+
+\subsection{Trust levels: Friend or Foe?}
+\label{subsec:trust}
+In GSN, information propagates along the edges of the social graph~\cite{Shapiro2023}. That means, that in the default settings of the app, users will not form opportunistic relations with strangers, but only with a determined list of trusted peers, for which they will propagate information.
+The setting that controls this is refered to as the trust setting, and two different values allow users to relax that constraint, depending on their usage environment and use case.
+The first setting - \textbf{Closed} - has been previously described and limits the new connections a device creates, and its visibility.
+In the \textbf{Closed} mode the device does not perform the announce exchange with strangers, discerning strangers from friends using devised service UUIDs to compare known UUIDs with possible new connections.
+In order to become friends, users must establish a BLE connection and exchange a bidirectional announce cycle, before sending (and accepting) a friend request.
+The second mode - \textbf{Open} - the user accepts incoming connections and correspondigly, tries to establish connection with every grassroots device it finds (prefix-matching of the grassroots constant on advertised service UUIDs), and completes the announce exchange with every such device.
+A device with an active connection to another can, in addition to friend request and the control-plane announce cycle, exchange basic text and media messages with them.
+
+\subsection{Cold-calls, Remote Connection Facilitation: Rendezvous}
+\label{subsec:rendezvous}
+In addition to meeting friends through the BLE substrate, one can befriend grassroots peers through cold-calls: cold-calls are a special mechanism that allows remote peers to create a connection not through previous bootstrapping over BLE, by using either an edge rendezvous point, or a cloud rendezvous point.
+An edge rendezvous point is actually a friend that has signaled, through a special bit on their announce packet, that they are willing to facilitate new connections with strangers. This allows their peers to create special invite links that can be redeemed at those special facilitator peers. An invite link is limited to a single use, expires in a short time, and requires the facilitator peer to have a permissive NAT and firewall that allows it to accept unsolicited connections~\ref{subsec:nat}.
+Additionally, an edge rendezvous point can be used as an out-of-band signaling channel to reestablish IP connections by coordinating hole-punching between two NAT'd remote friends, instrumenting them to send punch packets towards their counterpart's observed IP:port NAT mapping.
+Moreover, any peer can additionally run a cloud rendezvous point, which is a GNL peer that accepts all incoming connections, has a permissive firewall and a static IP address, and is permanently on, and runs the rendezvous protocol.
+Signaling messages travel in secure Noise sessions, so no stranger could intercept and decrypt them to find out a connection between two (or three) peers exist.
+The full rendezvous protocol can be observed in the appendix%~\ref{sec:rendezvous}.
+
 \section{System Architecture}
 
-\resizebox{!}{0.33\textheight}{ % Resizes height to 1/3 of the text height, aspect ratio preserved
-        \begin{tikzpicture}[
-            stack/.style={
-                draw, 
-                thick, 
-                minimum height=1.2cm, 
-                font=\sffamily\Huge,
-                inner sep=10pt
-            },
-            arrow/.style={
-                ->, 
-                >=stealth, 
-                thick
-            }
-        ]
+At the code level, BLE exposes separate central and peripheral path IDs for the same peer, while the Noise session manager is keyed by peer identity rather than by transport. The diagram therefore keeps BLE and IP as the two transport substrates and treats Noise as the shared session layer above them.
 
-            % --- Layer 1: Bottom (BLE, Cellular, WLAN) ---
-            \node[stack, minimum width=3cm] (ble) {BLE};
-            \node[stack, minimum width=3cm, anchor=west] (cellular) at ($(ble.east)+(0.5cm,0)$) {Cellular};
-            \node[stack, minimum width=3cm, anchor=west] (wlan) at ($(cellular.east)+(0.5cm,0)$) {WLAN};
+\begin{figure}[htbp]\centering
+\resizebox{!}{0.33\textheight}{%
+\begin{tikzpicture}[
+       stack/.style={
+              draw,
+              thick,
+        minimum height=1.05cm,
+        font=\sffamily\LARGE,
+              inner sep=10pt,
+              align=center
+       },
+       arrow/.style={
+              ->,
+              >=stealth,
+              thick
+       }
+]
+    % Rows are placed on fixed y-levels for consistent spacing.
+    \node[stack, minimum width=13.6cm] (app) at (0,0) {Grassroots Application};
+    \node[stack, minimum width=13.6cm] (coord) at (0,-1.8) {GrassrootsNetwork Coordinator};
 
-            % --- Layer 2: IP (Full Width) ---
-            \node[stack, minimum width=10cm, anchor=south west] (ip) at ($(ble.north west)+(0,0.8cm)$) {IP};
+    \node[stack, minimum width=4.2cm] (mesh) at (-4.6,-3.6) {Mesh Router};
+    \node[stack, minimum width=4.2cm] (noise) at (0,-3.6) {Noise Session};
+    \node[stack, minimum width=4.2cm] (signal) at (4.6,-3.6) {Signaling};
 
-            % --- Layer 3: UDP with TLS to the right ---
-            \node[stack, minimum width=7cm, anchor=south west] (udp) at ($(ip.north west)+(0,0.8cm)$) {UDP};
-            \node[stack, minimum width=2.5cm, anchor=south east] (noise) at ($(ip.north east)+(0,0.8cm)$) {Noise};
+    \node[stack, minimum width=13.6cm] (transport) at (0,-5.4) {Transport Service Abstraction};
 
-            % --- Layer 4: Top (GSN - Full Width) ---
-            \node[stack, minimum width=10cm, anchor=south west] (gsn) at ($(udp.north west)+(0,0.8cm)$) {GSN};
+    \node[stack, minimum width=6.5cm] (ble) at (-3.55,-7.2) {BLE Mesh Transport};
+    \node[stack, minimum width=6.5cm] (udp) at (3.55,-7.2) {UDP / UDX Transport};
 
-            % --- Arrows (Downward) ---
-            % From GSN to UDP
-            \draw[arrow] (gsn.south -| udp.north) -- (udp.north);
-            \draw[arrow] (gsn.south -| noise.north) -- (noise.north);
+    \node[stack, minimum width=6.5cm] (bleos) at (-3.55,-9.0) {OS Bluetooth LE Stack};
+    \node[stack, minimum width=6.5cm] (udpsock) at (3.55,-9.0) {UDP Sockets};
 
-            % From UDP to IP
-            \draw[arrow] (udp.south) -- (udp.south |- ip.north);
+    % Wiring
+    \coordinate (tLeft) at ($(transport.north west)!0.2!(transport.north east)$);
+    \coordinate (tMid) at ($(transport.north west)!0.5!(transport.north east)$);
+    \coordinate (tRight) at ($(transport.north west)!0.8!(transport.north east)$);
 
-            % From IP to BLE, Cellular, WLAN
-            \draw[arrow] (ip.south -| ble.north) -- (ble.north);
-            \draw[arrow] (ip.south -| cellular.north) -- (cellular.north);
-            \draw[arrow] (ip.south -| wlan.north) -- (wlan.north);
+    \draw[arrow] (app.south) -- (coord.north);
+    \draw[arrow] (coord.south) -- (mesh.north);
+    \draw[arrow] (coord.south) -- (noise.north);
+    \draw[arrow] (coord.south) -- (signal.north);
 
-        \end{tikzpicture}
-    }
+    \draw[arrow] (mesh.south) -- (tLeft);
+    \draw[arrow] (noise.south) -- (tMid);
+    \draw[arrow] (signal.south) -- (tRight);
 
-% ```
-% ┌─────────────────────────────────────────────────────────────────────────┐
-% │  Application layer  (GSG / madGLP runtime; here: demo chat app)         │
-% │  • Consumes the GrassrootsNetwork façade + reads the Redux store        │
-% │  • Supplies opaque payloads (Blocks); renders peers, chats, settings    │
-% ├─────────────────────────────────────────────────────────────────────────┤
-% │  Coordinator  —  GrassrootsNetwork  (lib/src/grassroots_network.dart)   │
-% │  • Wires transports, protocol, sessions, signaling, and the store       │
-% │  • Owns the send/receive pipeline, the outbound queue, retry logic      │
-% ├─────────────────────────────────────────────────────────────────────────┤
-% │  Protocol & security                                                    │
-% │  • Packet codec        (models/packet.dart, protocol/protocol_handler)  │
-% │  • Fragmentation       (protocol/fragment_handler.dart)                 │
-% │  • Noise XX sessions   (session/noise_session_manager.dart)             │
-% │  • Dedup / routing     (routing/message_router.dart, mesh/bloom_filter) │
-% │  • Signaling / NAT     (signaling/*, transport/hole_punch_service.dart) │
-% ├─────────────────────────────────────────────────────────────────────────┤
-% │  Transport layer  —  TransportService interface                         │
-% │  • BleTransportService  (dual-role GATT, grassroots_bluetooth_layer)    │
-% │  • UdpTransportService  (UDX over dual-stack UDP)                       │
-% ├─────────────────────────────────────────────────────────────────────────┤
-% │  Platform / hardware  (iOS & Android BLE radios, OS UDP sockets)        │
-% └─────────────────────────────────────────────────────────────────────────┘
-
-%            ┌──────────────────────────────────────────────┐
-%            │        Redux store (AppState)                │  ← cross-cutting:
-%            │  peers · transports · messages · friendships │    a strict projection
-%            │  · settings · signaling                      │    of transport facts
-%            └──────────────────────────────────────────────┘
-% ```
-
-\begin{itemize}
-    \item Ed25519 identity
-    \item Two transport protocols, one interface
-    \item Message types: announce, message, friendship
-    \item Friend vs. Stranger
-    \item Trust Levels: cold calls
-    \item Facilitation opt-in: edge RV points
-    \item Always-on cloud RV points: optionally use RVs to facilitate connections
-    \item Signaling over BT or mutual friends: hole-punching 
-    \item Simple messaging: text and media
-    \item Blocks: ACK, NACK
-\end{itemize}
+    \draw[arrow] (transport.south) -- (ble.north);
+    \draw[arrow] (transport.south) -- (udp.north);
+    \draw[arrow] (ble.south) -- (bleos.north);
+    \draw[arrow] (udp.south) -- (udpsock.north);
+\end{tikzpicture}%
+}
+\end{figure}
