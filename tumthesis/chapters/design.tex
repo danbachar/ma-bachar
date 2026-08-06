@@ -136,11 +136,11 @@ A scanner that found an advertiser's advertisement attempts to connect to it: if
 \label{subsec:trust}
 In GSN, information propagates along the edges of the social graph~\cite{Shapiro2023}. That means, that in the default settings of the app, users will not form opportunistic relations with strangers, but only with a determined list of trusted peers, for which they will propagate information.
 The setting that controls this is refered to as the trust setting, and two different values allow users to relax that constraint, depending on their usage environment and use case.
-The first setting - \textbf{Closed} - has been previously described and limits the new connections a device creates, and its visibility.
+The trust setting \textbf{Closed} has been previously described, and limits new connections a device creates, and its visibility.
 In the \textbf{Closed} mode the device does not perform the announce exchange with strangers, discerning strangers from friends using devised service UUIDs to compare known UUIDs with possible new connections.
 In order to become friends, users must establish a BLE connection and exchange a bidirectional announce cycle, before sending (and accepting) a friend request.
-The second mode - \textbf{Open} - the user accepts incoming connections and correspondigly, tries to establish connection with every grassroots device it finds (prefix-matching of the grassroots constant on advertised service UUIDs), and completes the announce exchange with every such device.
-A device with an active connection to another can, in addition to friend request and the control-plane announce cycle, exchange basic text and media messages with them.
+The \textbf{Open} trust setting allows the user device to accept incoming connections and correspondigly, tries to establish connection with every grassroots device it finds (prefix-matching of the grassroots constant on advertised service UUIDs), and completes the announce exchange with every such device.
+A device with an active connection to another can, in addition to friend request and the control-plane announce cycle, exchange basic text and media messages with them in a chat.
 
 \subsection{Cold-calls, Remote Connection Facilitation: Rendezvous}
 \label{subsec:rendezvous}
@@ -149,8 +149,11 @@ An edge rendezvous point is actually a friend that has signaled, through a speci
 Additionally, an edge rendezvous point can be used as an out-of-band signaling channel to reestablish IP connections by coordinating hole-punching between two NAT'd remote friends, instrumenting them to send punch packets towards their counterpart's observed IP:port NAT mapping.
 Moreover, any peer can additionally run a cloud rendezvous point, which is a GNL peer that accepts all incoming connections, has a permissive firewall and a static IP address, and is permanently on, and runs the rendezvous protocol.
 Signaling messages travel in secure Noise sessions, so no stranger could intercept and decrypt them to find out a connection between two (or three) peers exist.
-The full rendezvous protocol can be observed in the appendix%~\ref{sec:rendezvous}.
+The full rendezvous protocol can be observed in the appendix~\ref{sec:rendezvous}.
 
+\subsection{Encryption, Key Exchange, Noise Security}
+\label{subsec:encryption}
+In GNL, end-to-end encryption is used to secure messages against observers. To do that, we separate messages to two types: messages that can be encrypted, and messages that can't. The former type, messasges that must remain in cleartext, is the announce and the handshake messages; they can't be encrypted because they are necessary to establish an encrypted session (announce by spreading the peer's identity, handshake messages trivially)
 \section{System Architecture}
 
 At the code level, BLE exposes separate central and peripheral path IDs for the same peer, while the Noise session manager is keyed by peer identity rather than by transport. The diagram therefore keeps BLE and IP as the two transport substrates and treats Noise as the shared session layer above them.

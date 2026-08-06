@@ -91,9 +91,10 @@ Because TCP maintains a strict connection state, the connection will break entir
 Every time a mobile device roams, such as switching from a Wi-Fi network to cellular data, or changing its network attachment point, its IP address changes, forcing the TCP connection to be completely re-established from scratch.
 To overcome the obstacles caused by node mobility and the ensuing change in Internet addresses, we have decided to focus on the UDP protocol as we expect frequent address changes due to our mobility model.
 
+
 \subsection{UDX}
 \label{sec:udx}
-The transport-layer protocol that was chosen for the system, UDP, is a lightweight, data-oriented network protocol that allows the users to send datagrams without establishing a session or connection between each other. It prioritizes simplicity, incarnate in a lightweight header size, over error-correcting code, reliability, or packet-ordering which are all present in TCP, which makes it ideal for sending lightweight messages as it wastes no time establishing a reliable connection as its counterpart TCP.
+The transport-layer protocol that was chosen for the system, UDP, is a lightweight, data-oriented network protocol that allows the users to send datagrams without establishing a session or connection between each other. It prioritizes simplicity, incarnate in a lightweight header size, over error-correcting code, reliability, or packet-ordering which are all present in TCP, which makes it ideal for sending lightweight messages as it does not establish reliable connections as its counterpart.
 UDP or UDP-based protocols are often used in time-critical applications like online gaming, streaming, and other p2p applications.
 Due to the focus on simplicity, the resulting trade-off yields a transport-layer that, had it based itself directly on UDP, would have needed to implement error-correction codes, deal with network-level packet-loss, congestion control and flow control on active links. In addition to the transport-level control mechanisms, an encryption layer needs to be implemented on-top, in order to guarantee no adversary could read messages that were not intended for them.
 The transport we ultimately selected for remote peer-to-peer links is UDX, the reliable stream transport that underpins the Holepunch/Pears networking stack~\cite{udx}.
