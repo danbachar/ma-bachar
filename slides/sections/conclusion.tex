@@ -1,0 +1,23 @@
+\section{Conclusion}
+\begin{frame}{}
+    \begin{moepdef}{blue}{filled}{Can BLE alone carry a grassroots social network?}
+        Not at scale: delivery is bounded by the radio range under a hop limit, and by the airtime a node shares among its links.
+    \end{moepdef}
+    \vspace{1ex}
+    % \begin{itemize}
+    %     \item \textbf{Built}: GNL, one overlay over two underlays, with no servers and no relays
+    %     \item \textbf{Measured} on eight smartphones: distance costs little, RSSI predicts cost, contention collapses delivery, outages are heavy-tailed
+    %     \item \textbf{Simulated} at 392 nodes: BLE-only delivery saturates at 80\,\%, even with optimal routing; bridging the mesh over UDX reaches 99.9\,\%
+    % \end{itemize}
+    \takeaway{In a full shutdown, form links deliberately, guided by RSSI. Whenever an Internet path survives, bridge the mesh across it.}
+\end{frame}
+
+\begin{frame}{Future work}
+    \begin{itemize}
+        \item \textbf{Control plane}: a user-chosen scenario policy, emergency or protest, that sets link admission by RSSI and the flooding budget
+        \item \textbf{Buffers}: VACCINE-style antipackets~\cite{Ott2010, Ott2011} that purge delivered messages, weighed against the presence they reveal
+        \item \textbf{Handshakes}: Noise patterns for friends who already know each other's keys save a message and keep keys off the air
+        \item \textbf{NAT traversal and BLE stack}: a grassroots AutoNAT through several friends; connection intervals, scan windows, stale-address failures
+        \item \textbf{Beyond messaging}: opportunistic networks as a substrate for collective communication on co-located devices
+    \end{itemize}
+\end{frame}

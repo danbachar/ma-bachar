@@ -5,13 +5,39 @@
 \usepackage{beamermods}
 \usepackage{adjustbox}
 \usepackage{attachfile}
-\usepackage{fontawesome5} % Required for the icons and glyphs
+\usepackage{fontawesome5}   % icons in the rendezvous diagram
+\usepackage{bytefield}      % wire format on the backup slides
+\usepackage{xurl}           % let long URLs in the bibliography break anywhere
 
 % For beamer mode (default):
-\author[D. Bachar]{Dan Bachar, \textnormal{David Guzman}}
-\title[GLP]{An Overlay for Social Networks based on Directed Acyclic Graphs on the Edge}
+\author[D. Bachar]{Dan Bachar}
+\title[Local Area P2P Overlays for Grassroots Social Networks]{Revisiting Local Area Peer-to-Peer Overlays\\ for Grassroots Social Networks}
+\thesistype{final}{master}
+\advisor{\unexpanded{David Guzman\\[0.5ex]Examiner: Prof.~Dr.-Ing.~J\"org Ott\\Supervisors: Prof.~Dr.~Idit Keidar, Prof.~Dr.~Ehud Shapiro}}
+% TODO: confirm the defense date
+\date{September 23, 2026}
 
-\newdate{date}{20}{04}{2026}
+% Narrow text columns look better ragged than justified: call \raggeditems inside the column
+\newcommand{\raggeditems}{\renewcommand{\justify}{\raggedright}\raggedright}
+% Ragged paragraph cells for tables
+\newcolumntype{Y}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+% One-line message at the bottom of a results slide
+\newcommand{\takeaway}[1]{\par\vspace{1.2ex}{\color{TUMBlue}\textbf{\(\Rightarrow\)\;#1}}\par}
+
+% Timing plan for the 25-minute talk (the 5 minutes of questions follow; backup slides sit after the bibliography).
+%   Title and five outline transitions   0:45
+%   Introduction    4 frames             4:15
+%   Background      4 frames             3:15
+%   System design   6 frames             5:30
+%   Evaluation      7 frames             8:15
+%   Discussion, conclusion, future work  3:00
+% The presenter script (talking points per frame, keyed by PDF page range) lives in
+% speaker-script.txt next to this file, not in the LaTeX source. After editing the deck:
+%   make && python3 pagemap.py --renumber speaker-script.txt
+
+% byte offsets in the wire-format backup slide
+\newcommand{\offset}[1]{\makebox[0pt][r]{#1 B\hspace{1.5em}}}
 
 \usepackage{pgfpages}
 \usepackage{ifthen}
@@ -33,9 +59,33 @@
 
 
 \begin{document}
-    \input{sections/architecture}
-    \input{sections/connectivity-ble}
-    \input{sections/connectivity-udp}
-    \input{sections/connectivity-rv}
-    \input{sections/next-steps}
+\input{sections/outline}
+\input{sections/intro}
+\outlineframe{2}
+\input{sections/background}
+\outlineframe{3}
+\input{sections/design}
+\outlineframe{4}
+\input{sections/evaluation}
+\outlineframe{5}
+\input{sections/conclusion}
+\outlineframe{6}
+\input{sections/discussion}
+
+\section{Bibliography}
+% show the citation labels used on the slides instead of beamer's icons, and set the list compactly
+\setbeamertemplate{bibliography item}{\insertbiblabel}
+\setbeamerfont{bibliography item}{size=\footnotesize}
+\setbeamerfont{bibliography entry author}{size=\footnotesize}
+\setbeamerfont{bibliography entry title}{size=\footnotesize}
+\setbeamerfont{bibliography entry location}{size=\footnotesize}
+\setbeamerfont{bibliography entry note}{size=\footnotesize}
+\begin{frame}[allowframebreaks]
+    \footnotesize
+    \setlength{\itemsep}{0pt}
+    \bibliographystyle{firstauthorYY}
+    \bibliography{references}
+\end{frame}
+
+\input{sections/backup}
 \end{document}

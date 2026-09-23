@@ -1,0 +1,22 @@
+% Outline frame that highlights the current section: \outlineframe{<index>}
+% 1 Introduction, 2 Background, 3 System Design, 4 Evaluation, 5 Conclusion, 6 Discussion
+\newcommand{\outlineitem}[3]{%
+    \ifnum#2<#1 \item {\color{TUMBlack}\large #3}\else
+    \ifnum#2=#1 \item {\large\textbf{#3}}\else
+    \item {\large #3}\fi\fi}
+\newcommand{\outlineframe}[1]{%
+\section{Outline}
+\begin{frame}{}
+    \vspace{1cm}
+    \setbeamercolor{itemize/enumerate body}{fg=TUMBlue}
+    \begin{itemize}
+        \setlength\itemsep{1.4em}
+        \setbeamertemplate{itemize item}{}
+        \outlineitem{#1}{1}{Introduction}
+        \outlineitem{#1}{2}{Background}
+        \outlineitem{#1}{3}{System Design}
+        \outlineitem{#1}{4}{Evaluation}
+        \outlineitem{#1}{5}{Conclusion}
+        \outlineitem{#1}{6}{Discussion}
+    \end{itemize}
+\end{frame}}

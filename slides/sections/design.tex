@@ -1,0 +1,167 @@
+\section{System Design}
+\begin{frame}{One overlay, two underlays}
+    \begin{columns}[T]
+    \column{0.48\textwidth}
+    \centering
+    \begin{tikzpicture}[x=1mm,y=1mm, font=\footnotesize,
+        box/.style={draw, thick, fill=white, align=center, inner sep=1.5pt},
+        wide/.style={box, minimum width=54mm},
+        half/.style={box, text width=25mm, minimum height=10mm},
+        sub/.style={box, text width=15.5mm, minimum height=6mm, font=\scriptsize}]
+        \node[wide, minimum height=6mm, fill=black!5] (app) at (27,50) {Grassroots Social Networks};
+        \node[wide, minimum height=14mm, fill=TUMBlue!12] (gnl) at (27,37.5) {};
+        \node[font=\footnotesize\bfseries] at (27,42.5) {GNL overlay};
+        \node[sub] at (9.5,35) {Fragment and protocol handlers};
+        \node[sub] at (27,35) {Noise session manager};
+        \node[sub] at (44.5,35) {Message router, DTN buffer};
+        \node[wide, minimum height=7mm, dashed, fill=black!3] (tsi) at (27,26) {Transport service interface};
+        \node[half] (ble) at (13,14) {LAN PHY\\underlay adapter\\GATT links over BLE\\Mesh delivery};
+        \node[half] (udp) at (41,14) {WAN Transport\\underlay adapter\\UDX streams over UDP\\direct delivery only};
+        \node[half, minimum height=8mm, fill=black!5] (blephy) at (13,3) {OS BLE stack\\Central, Peripheral};
+        \node[half, minimum height=8mm, fill=black!5] (ipphy) at (41,3) {OS UDP/IP stack\\Wi-Fi, Ethernet, cellular};
+        \draw[->, thick] (app) -- (gnl);
+        \draw[->, thick] (gnl) -- (tsi);
+        \draw[->, thick] (tsi.south -| ble) -- (ble);
+        \draw[->, thick] (tsi.south -| udp) -- (udp);
+        \draw[->, thick] (ble) -- (blephy);
+        \draw[->, thick] (udp) -- (ipphy);
+    \end{tikzpicture}
+    \captionof{figure}{GNL component architecture}
+    \column{0.50\textwidth}
+    \raggeditems
+    \begin{itemize}
+        \item GNL fragments to the path MTU, seals every fragment in the peer's Noise session, and picks the underlay that currently reaches the peer
+        \item Radio first: a peer reachable over both is served over BLE
+        \item No link to the recipient? The router takes custody and conveys the packet over the mesh
+    \end{itemize}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Identity, discovery, and trust}
+    \centering
+    \begin{tikzpicture}[x=1mm,y=1mm, font=\footnotesize]
+        \node[draw, thick, fill=black!5, minimum width=50mm, minimum height=10mm, align=center] at (25,0) {\textbf{8 B fixed prefix}\\ \texttt{SHA-256("grassroots")}};
+        \node[draw, thick, fill=TUMBlue!12, minimum width=66mm, minimum height=10mm, align=center] at (83,0) {\textbf{8 B rotating suffix}, new every 15 minutes\\ \texttt{SHA-256("grassroots ble suffix" | pubkey | slot)}};
+    \end{tikzpicture}
+    \captionof{figure}{The advertised BLE service UUID}
+    \vspace{1ex}
+    \begin{itemize}
+        \item \textbf{Identity} is an Ed25519 key pair: the address, the signature, and the root of the session key
+        \item \textbf{ANNOUNCE} broadcasts presence and identity
+        \item Friends who know the key recognize the beacon; random to strangers and cannot be tracked across slots
+        \item \textbf{Trust}: \emph{Closed} links only to friends and never relays; \emph{Open} links to any grassroots device and joins the mesh
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Secure sessions and the packet header}
+    \begin{itemize}
+        \item \textbf{Noise XX} with \texttt{Curve25519} and \texttt{ChaCha20-Poly1305}~\cite{Kobeissi2018, polychacha}: a static key that differs from the announced one aborts the handshake
+        \item One session per peer across both underlays, keyed by public key
+        \item 60-byte outer envelope header with a recipient but \emph{no sender}: relays read only the \mbox{envelope}
+        \item The receiver finds the sender by trial decryption against its sessions, to read inner encrypted envelope
+        % \item The recipient field stays: without it every transit packet would be trial-decrypted, and 128 sessions saturate one Nexus 5X core at 22 packets per second
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Routing over the BLE mesh}
+    \begin{columns}[T]
+    \column{0.54\textwidth}
+    \raggeditems
+    \begin{itemize}
+        \item \textbf{Controlled flooding}: forward packets using GCS buffer reconciliation
+        \item \textbf{Custody}: keep packets per recipient for 6 hours or until a delivery proof arrives
+        \item \textbf{Fragmentation}: the 247-byte MTU leaves 138 B of payload per fragment~\cite{TJonck2021}
+    \end{itemize}
+    \column{0.44\textwidth}
+    \centering
+    \vspace{2mm}
+    \begin{tikzpicture}[x=0.9mm,y=0.9mm, font=\footnotesize,
+        dev/.style={circle, draw, thick, fill=white, minimum size=5.5mm, inner sep=0pt},
+        hop/.style={->, thick, TUMBlue},
+        ttl/.style={font=\scriptsize, fill=white, inner sep=1pt}]
+        \node[dev] (s) at (0,16) {S};
+        \node[dev] (a) at (16,28) {};
+        \node[dev] (b) at (16,4) {};
+        \node[dev] (c) at (32,16) {C};
+        \node[dev] (e) at (32,38) {};
+        \node[dev, dashed] (d) at (52,16) {D};
+        \draw[hop] (s)--(a) node[ttl, midway] {TTL 7};
+        \draw[hop] (s)--(b) node[ttl, midway] {TTL 7};
+        \draw[hop] (a)--(c) node[ttl, midway] {6};
+        \draw[hop] (b)--(c) node[ttl, midway] {6};
+        \draw[hop] (a)--(e) node[ttl, midway] {6};
+        \draw[hop, dashed] (c)--(d) node[ttl, midway] {5};
+        \node[font=\scriptsize, black!60, align=center, text width=50mm] at (26,-9) {Duplicates are suppressed by packet ID. C keeps custody until it links with D or sees a delivery proof.};
+    \end{tikzpicture}
+    \captionof{figure}{Controlled flooding with custody}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{The IP path: rendezvous through friends}
+    \begin{columns}[T]
+    \column{0.42\textwidth}
+    \centering
+    \resizebox{\linewidth}{!}{
+        \begin{tikzpicture}[
+            smartphone_body/.style={
+                draw, thick, rectangle, rounded corners=4pt,
+                minimum width=0.8cm, minimum height=1.6cm, fill=white,
+            },
+            smartphone_screen/.style={draw, thick, rounded corners=1pt},
+            smartphone_button/.style={draw, thick, circle},
+            big_cloud/.style={
+                draw, cloud, thick,
+                minimum width=6cm, minimum height=3.8cm,
+                cloud ignores aspect, cloud puffs=15,
+                draw=gray!60
+            },
+            small_cloud/.style={
+                draw, cloud, thick,
+                minimum width=3.5cm, minimum height=2.5cm,
+                cloud ignores aspect, cloud puffs=13,
+                draw=gray!60
+            },
+            transition_arrow/.style={->, >=stealth, line width=2pt, draw=gray!60},
+            lbl/.style={font=\Large\bfseries}
+        ]
+            % top: B is linked to A over BLE and to C over the Internet
+            \node[big_cloud] (bigcloud) at (-3.5, 3.5) {};
+            \node[smartphone_body] (pmain) at (-2.2, 4) {};
+            \node[smartphone_body] (pleft_top) at (-4.8, 3) {};
+            \node[smartphone_body] (pright_top) at (5, 3.5) {};
+            \node[small_cloud] at (pright_top.center) {};
+            \draw[thick] (pmain.center) -- (pleft_top.center)
+                node[blue!70!black, fill=white, inner sep=2pt, midway] {\Large \faBluetoothB};
+            \draw[thick] (pmain.center) -- (pright_top.center)
+                node[green!40!black, fill=white, inner sep=2pt, midway] {\Large \faGlobe};
+            \draw[transition_arrow] (0, 1.5) -- (0, 0.3);
+            % bottom: A and C talk directly after the punch
+            \node[smartphone_body] (p1_bot) at (-5, -1) {};
+            \node[smartphone_body] (p2_bot) at (5, -1) {};
+            \node[small_cloud] at (p1_bot.center) {};
+            \node[small_cloud] at (p2_bot.center) {};
+            \draw[thick] (p1_bot.center) -- (p2_bot.center)
+                node[green!40!black, fill=white, inner sep=2pt] at (0, -1) {\Huge \faGlobe};
+            \foreach \p in {pmain, pleft_top, pright_top, p1_bot, p2_bot} {
+                \node[smartphone_body] at (\p) {};
+                \draw[smartphone_screen] ($(\p)+(-0.3, -0.6)$) rectangle ($(\p)+(0.3, 0.7)$);
+                \draw[smartphone_button] ($(\p)+(0,-0.5)$) circle (0.05cm);
+            }
+            \node[lbl, below=0.1cm of pleft_top] {A};
+            \node[lbl, below=0.1cm of pmain] {B};
+            \node[lbl, below=0.1cm of pright_top] {C};
+            \node[lbl, below=0.1cm of p1_bot] {A};
+            \node[lbl, below=0.1cm of p2_bot] {C};
+        \end{tikzpicture}
+    }
+    \captionof{figure}{B, a mutual friend linked to A over BLE and to C over the Internet, signals the hole punch; afterwards A and C communicate directly}
+    \column{0.56\textwidth}
+    \raggeditems
+    \begin{itemize}
+        \item NATs drop unsolicited packets, so friends need a \emph{signaling channel} to punch holes~\cite{RFC5128}: a direct BLE link, or mutual online friends as rendezvous agents
+        \item The rendezvous agent reflects each peer's public address and instructs both to send \texttt{punch} packets; signed \emph{friendship attestations} authorize it
+        \item A UDX stream opens, then Noise XX authenticates it
+        \item \textbf{Cold calls}: a signed, single-use invite link, valid for limited time
+    \end{itemize}
+    \end{columns}
+\end{frame}

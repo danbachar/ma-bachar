@@ -1,0 +1,41 @@
+\documentclass[NET,english,beameralt]{tumbeamer}
+
+\usepackage[utf8]{inputenc}
+\usepackage{packages}
+\usepackage{beamermods}
+\usepackage{adjustbox}
+\usepackage{attachfile}
+\usepackage{fontawesome5} % Required for the icons and glyphs
+
+% For beamer mode (default):
+\author[D. Bachar]{Dan Bachar, \textnormal{David Guzman}}
+\title[GLP]{An Overlay for Social Networks based on Directed Acyclic Graphs on the Edge}
+
+\newdate{date}{20}{04}{2026}
+
+\usepackage{pgfpages}
+\usepackage{ifthen}
+% ============================================================================
+% jobname solution
+% ============================================================================
+\newif\ifsolution%
+\ifthenelse{\equal{\detokenize{notes}}{\jobname}}{%
+\setbeameroption{show notes on second screen=bottom}
+\setbeamercolor{note page}{bg=white, fg=black}
+\setbeamercolor{note title}{bg=white!95!black, fg=black}
+}{
+}
+
+% TeXLive 2018 compatibility: https://tex.stackexchange.com/questions/426088/texlive-pretest-2018-beamer-and-subfig-collide
+\makeatletter
+\let\@@magyar@captionfix\relax
+\makeatother
+
+
+\begin{document}
+    \input{sections/architecture}
+    \input{sections/connectivity-ble}
+    \input{sections/connectivity-udp}
+    \input{sections/connectivity-rv}
+    \input{sections/next-steps}
+\end{document}

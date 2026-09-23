@@ -1,0 +1,11 @@
+\section{Discussion}
+\begin{frame}{}
+    \begin{itemize}
+        \item At close range, \textbf{Contention binds the BLE mesh.} Delivery falls with the number of active links per node, at an RSSI where a single link is lossless
+        \item \textbf{A second transport between rotating leaders is what scales,} from 80\,\% to 99.9\,\%. Leaders can double as gateways and rendezvous agents, and rotate as they drain
+        \item \textbf{The price is exposure.} Leaders and rendezvous points attract traffic analysis and denial of service; onion-style hops would trade usability for privacy~\cite{Aceto2026}
+        \item \textbf{Judge links by RSSI, not by geography,} unlike Amigo's GPS grid and CityMesh's building map~\cite{Inyangson2025, Liu2026}
+        \item \textbf{Limits.} Leader election is free in the simulation; greedy linking is the wrong default in dense settings
+    \end{itemize}
+    \takeaway{Thank you! questions?}
+\end{frame}

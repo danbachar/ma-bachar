@@ -1,0 +1,42 @@
+\section{Background}
+\begin{frame}{The local-area underlay}
+    \textbf{Six criteria}: interoperability and availability on commodity-grade smartphones, low power, works while backgrounded, tolerates mobility, needs no infrastructure, and carries a short message within a second~\cite{Nielsen1994}
+    \begin{center}
+    \small
+    \setlength{\tabcolsep}{4pt}
+    \begin{tabular}{@{}lcY{6.3cm}@{}}
+        \toprule
+        Technology & & Why \\
+        \midrule
+        Wi-Fi Ad-Hoc & \no & no power saving when idle~\cite{Friedman2013} \\
+        Wi-Fi Direct, AirDrop, QuickShare & \no & requires a foreground app; no interoperability between iOS and Android~\cite{CampsMur2013} \\
+        Wi-Fi Aware & \no & reached iOS only in 2025~\cite{Apple2025WWDC} \\
+        Zigbee, LoRa, 6LoWPAN & \no & no device-to-device support on smartphones~\cite{Saloni2016} \\
+        \textbf{Bluetooth Low Energy} & \yes & on all smartphones; duty-cycled radio; the OS advertises and scans in the background; about 200\,kb/s~\cite{Jacopo2017} \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+    % \vspace{0.5ex}
+    % {\small BLE is the only technology that meets all six. Bluetooth 4.2's data length extension gives the 247-byte MTU the design builds on~\cite{TJonck2021}.}
+\end{frame}
+
+\begin{frame}{The wide-area underlay}
+    % \textbf{For friends beyond radio range}: the transport must survive a change of network attachment point, and cost as little as possible to re-establish
+    The transport must survive a change of network attachment point, and cost as little as possible to (re-)establish, no encryption or handshake
+    \begin{center}
+    \small
+    \setlength{\tabcolsep}{4pt}
+    \begin{tabular}{@{}lcY{6.6cm}@{}}
+        \toprule
+        Transport & & Why \\
+        \midrule
+        TCP & \no & the connection breaks when its 5-tuple changes, congestion control reads an outage as congestion~\cite{RFC9293, RFC5681}, and throughput falls with the hop count~\cite{Matei2002} \\
+        Plain UDP & \no & survives address changes, but offers no reliability, ordering, or congestion control~\cite{RFC768} \\
+        QUIC & \maybe & reliable and congestion-controlled, but pays a handshake and brings encryption the overlay already has~\cite{Langley2017} \\
+        \textbf{UDX} & \yes & Similar to QUIC, but no handshake and no encryption~\cite{udx} \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+    \vspace{0.5ex}
+    % {\small Noise supplies the security on top. NATs still drop unsolicited packets, so two friends need a signaling channel to punch a hole~\cite{RFC5128}.}
+\end{frame}
